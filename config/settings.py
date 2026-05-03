@@ -172,3 +172,10 @@ PAYSTACK_CURRENCY = os.getenv("PAYSTACK_CURRENCY", "NGN")
 
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://web-production-04359.up.railway.app",
+    "https://mutafs.com",
+    "https://www.mutafs.com",
+]
