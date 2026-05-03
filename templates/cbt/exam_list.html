@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="CBT Exams" page_subtitle="Manage all CBT exams in your school" %}
+<div class="space-y-6">
+    <div class="flex justify-end">
+        <a href="{% url 'cbt_exam_create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+            Create CBT Exam
+        </a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Title</th>
+                    <th class="py-3">Class</th>
+                    <th class="py-3">Subject</th>
+                    <th class="py-3">Session</th>
+                    <th class="py-3">Term</th>
+                    <th class="py-3">Duration</th>
+                    <th class="py-3">Questions</th>
+                    <th class="py-3">Attempt Rule</th>
+                    <th class="py-3">Start</th>
+                    <th class="py-3">End</th>
+                    <th class="py-3">Status</th>
+                    <th class="py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exams %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3 font-medium">{{ exam.title }}</td>
+                    <td class="py-3">{{ exam.school_class.name }}</td>
+                    <td class="py-3">{{ exam.subject.name }}</td>
+                    <td class="py-3">{{ exam.session.name }}</td>
+                    <td class="py-3">{{ exam.term.get_name_display }}</td>
+                    <td class="py-3">{{ exam.duration_minutes }} mins</td>
+                    <td class="py-3">{{ exam.total_questions }}</td>
+                    <td class="py-3">{{ exam.get_attempt_rule_display }}</td>
+                    <td class="py-3">{{ exam.start_datetime|default:"-" }}</td>
+                    <td class="py-3">{{ exam.end_datetime|default:"-" }}</td>
+                    <td class="py-3">
+                        {% if exam.is_active %}
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">Active</span>
+                        {% else %}
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 flex gap-3 flex-wrap">
+                        <a href="{% url 'cbt_question_list' exam.id %}" class="text-blue-600 hover:underline">Questions</a>
+                        <a href="{% url 'cbt_exam_attempts' exam.id %}" class="text-purple-600 hover:underline">Attempts</a>
+                        <a href="{% url 'cbt_question_create' exam.id %}" class="text-emerald-600 hover:underline">Add Question</a>
+                        <a href="{% url 'cbt_exam_update' exam.id %}" class="text-indigo-600 hover:underline">Edit</a>
+                        <a href="{% url 'cbt_exam_toggle_status' exam.id %}" class="text-yellow-600 hover:underline">
+                            {% if exam.is_active %}Deactivate{% else %}Activate{% endif %}
+                        </a>
+                        <a href="{% url 'cbt_exam_delete' exam.id %}" class="text-red-600 hover:underline">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="12" class="py-4 text-slate-500">No CBT exams created yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

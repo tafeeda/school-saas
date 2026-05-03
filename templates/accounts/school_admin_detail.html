@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+
+    <div class="mb-6">
+        <a href="{% url 'school_admin_list' %}" class="text-blue-600 hover:underline">← Back to School Admins</a>
+        <h1 class="text-2xl font-bold text-slate-800 mt-3">School Admin Details</h1>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+                <p class="text-sm text-slate-500">Username</p>
+                <p class="font-semibold text-slate-800">{{ school_admin.username }}</p>
+            </div>
+
+            <div>
+                <p class="text-sm text-slate-500">Full Name</p>
+                <p class="font-semibold text-slate-800">{{ school_admin.get_full_name|default:"-" }}</p>
+            </div>
+
+            <div>
+                <p class="text-sm text-slate-500">Email</p>
+                <p class="font-semibold text-slate-800">{{ school_admin.email|default:"-" }}</p>
+            </div>
+
+            <div>
+                <p class="text-sm text-slate-500">School</p>
+                <p class="font-semibold text-slate-800">
+                    {% if school_admin.school %}
+                        {{ school_admin.school.name }}
+                    {% else %}
+                        No school assigned
+                    {% endif %}
+                </p>
+            </div>
+
+            <div>
+                <p class="text-sm text-slate-500">Status</p>
+                {% if school_admin.is_active %}
+                    <span class="inline-block mt-1 px-3 py-1 rounded-full text-xs bg-green-100 text-green-700 font-semibold">Active</span>
+                {% else %}
+                    <span class="inline-block mt-1 px-3 py-1 rounded-full text-xs bg-red-100 text-red-700 font-semibold">Inactive</span>
+                {% endif %}
+            </div>
+
+            <div>
+                <p class="text-sm text-slate-500">Last Login</p>
+                <p class="font-semibold text-slate-800">
+                    {% if school_admin.last_login %}
+                        {{ school_admin.last_login|date:"M d, Y h:i A" }}
+                    {% else %}
+                        Never
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-3 mt-8">
+            <a href="{% url 'school_admin_edit' school_admin.id %}" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white">
+                Edit Account
+            </a>
+
+            <a href="{% url 'school_admin_change_password' school_admin.id %}" class="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white">
+                Change Password
+            </a>
+
+            {% if school_admin.is_active %}
+            <form method="post" action="{% url 'school_admin_deactivate' school_admin.id %}">
+                {% csrf_token %}
+                <button type="submit" onclick="return confirm('Deactivate this School Admin?')" class="px-5 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white">
+                    Deactivate
+                </button>
+            </form>
+            {% else %}
+            <form method="post" action="{% url 'school_admin_activate' school_admin.id %}">
+                {% csrf_token %}
+                <button type="submit" class="px-5 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white">
+                    Activate
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

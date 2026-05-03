@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="space-y-8">
+    <div>
+        <h3 class="text-2xl font-bold">My Result Entries</h3>
+        <p class="text-slate-500">Select a student result sheet and enter your subject score.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <div class="mb-4">
+            <h4 class="text-xl font-semibold">Available Result Sheets</h4>
+        </div>
+
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Student</th>
+                    <th class="py-3">Class</th>
+                    <th class="py-3">Session</th>
+                    <th class="py-3">Term</th>
+                    <th class="py-3">Progress</th>
+                    <th class="py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sheet in sheets %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3 font-medium">{{ sheet.student.full_name }}</td>
+                    <td class="py-3">{{ sheet.school_class.name }}</td>
+                    <td class="py-3">{{ sheet.session.name }}</td>
+                    <td class="py-3">{{ sheet.term.get_name_display }}</td>
+                    <td class="py-3">
+                        {% with progress=sheet_progress|dict_get:sheet.id %}
+                            <div class="text-sm">
+                                <span class="font-semibold text-blue-600">
+                                    {{ progress.entered }} / {{ progress.total }}
+                                </span>
+                                <div class="text-xs text-slate-500">
+                                    {{ progress.remaining }} remaining
+                                </div>
+                            </div>
+                        {% endwith %}
+                    </td>
+                    <td class="py-3 flex gap-3">
+                        <a href="{% url 'result_sheet_detail' sheet.pk %}" class="text-blue-600 hover:underline">View Sheet</a>
+                        <a href="{% url 'teacher_subject_result_create' sheet.id %}" class="text-emerald-600 hover:underline">Enter Score</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="py-4 text-slate-500">No assigned result sheets found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <div class="mb-4">
+            <h4 class="text-xl font-semibold">My Entered Subject Results</h4>
+        </div>
+
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Student</th>
+                    <th class="py-3">Subject</th>
+                    <th class="py-3">Class</th>
+                    <th class="py-3">CA</th>
+                    <th class="py-3">Exam</th>
+                    <th class="py-3">Total</th>
+                    <th class="py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in entered_results %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3 font-medium">{{ item.result_sheet.student.full_name }}</td>
+                    <td class="py-3">{{ item.subject.name }}</td>
+                    <td class="py-3">{{ item.result_sheet.school_class.name }}</td>
+                    <td class="py-3">{{ item.ca_score }}</td>
+                    <td class="py-3">{{ item.exam_score }}</td>
+                    <td class="py-3">{{ item.total_score }}</td>
+                    <td class="py-3 flex gap-3">
+                        <a href="{% url 'teacher_subject_result_detail' item.pk %}" class="text-blue-600 hover:underline">View</a>
+                        <a href="{% url 'teacher_subject_result_update' item.pk %}" class="text-emerald-600 hover:underline">Edit</a>
+                        <a href="{% url 'teacher_subject_result_delete' item.pk %}" class="text-red-600 hover:underline">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="py-4 text-slate-500">No subject results entered yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

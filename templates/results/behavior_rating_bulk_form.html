@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">{{ page_title }}</h3>
+        <p class="text-slate-500 mb-6">Student: {{ sheet.student.full_name }}</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-4 flex gap-3 items-center">
+                <button type="button" onclick="fillAllScores(3)" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-xl">
+                    Set All Scores to 3
+                </button>
+                <button type="button" onclick="fillAllScores(4)" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+                    Set All Scores to 4
+                </button>
+                <button type="button" onclick="fillAllRemarks('Good')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl">
+                    Set All Remarks to Good
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-slate-200">
+                            <th class="py-3">Use</th>
+                            <th class="py-3">Trait</th>
+                            <th class="py-3">Category</th>
+                            <th class="py-3">Score</th>
+                            <th class="py-3">Remark</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trait_code, trait_label in available_traits %}
+                        <tr class="border-b border-slate-100">
+                            <td class="py-3">
+                            <input type="checkbox" name="selected_{{ trait_code }}" class="trait-checkbox" checked>
+                        </td>
+
+                        <td class="py-3 font-medium">{{ trait_label }}</td>
+
+                            <td class="py-3">
+                                <select name="category_{% firstof trait_code '' %}" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                                    {% for code, label in category_choices %}
+                                        <option value="{{ code }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+
+                            <td class="py-3">
+                                <input type="number" name="score_{{ trait_code }}" min="1" max="5" class="score-input w-full rounded-xl border border-slate-300 px-4 py-3">
+                            </td>
+
+                            <td class="py-3">
+                                <input type="text" name="remark_{{ trait_code }}" class="remark-input w-full rounded-xl border border-slate-300 px-4 py-3">
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="py-4 text-slate-500">All behavior ratings have already been added.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold">
+                    Save All Ratings
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function fillAllScores(value) {
+    document.querySelectorAll(".score-input").forEach(input => {
+        if (!input.value) input.value = value;
+    });
+}
+
+function fillAllRemarks(value) {
+    document.querySelectorAll(".remark-input").forEach(input => {
+        if (!input.value) input.value = value;
+    });
+}
+</script>
+{% endblock %}

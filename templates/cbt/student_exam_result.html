@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="CBT Result" page_subtitle=attempt.exam.title %}
+<div class="max-w-4xl space-y-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+
+        {% if show_score %}
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-slate-50 rounded-xl p-4">
+                    <p class="text-sm text-slate-500">Student</p>
+                    <p class="font-semibold">{{ attempt.student.full_name }}</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-4">
+                    <p class="text-sm text-slate-500">Score</p>
+                    <p class="font-semibold">{{ attempt.score }}/{{ attempt.total }}</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-4">
+                    <p class="text-sm text-slate-500">Percentage</p>
+                    <p class="font-semibold">{{ percentage }}%</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-4">
+                    <p class="text-sm text-slate-500">Submitted At</p>
+                    <p class="font-semibold">{{ attempt.submitted_at }}</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                <div class="bg-green-50 rounded-xl p-4">
+                    <p class="text-sm text-slate-500">Correct</p>
+                    <p class="font-semibold text-green-700">{{ correct_count }}</p>
+                </div>
+                <div class="bg-red-50 rounded-xl p-4">
+                    <p class="text-sm text-slate-500">Wrong</p>
+                    <p class="font-semibold text-red-700">{{ wrong_count }}</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-4">
+                    <p class="text-sm text-slate-500">Unanswered</p>
+                    <p class="font-semibold">{{ unanswered_count }}</p>
+                </div>
+                <div class="bg-blue-50 rounded-xl p-4">
+                    <p class="text-sm text-slate-500">Performance</p>
+                    <p class="font-semibold text-blue-700">{{ performance }}</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mt-6">
+                <h4 class="text-xl font-semibold mb-4">Answer Review</h4>
+
+                <div class="space-y-4">
+                    {% for ans in answers %}
+                    <div class="p-4 rounded-xl border
+                        {% if ans.selected_option == ans.question.correct_option %}
+                            border-green-300 bg-green-50
+                        {% else %}
+                            border-red-300 bg-red-50
+                        {% endif %}
+                    ">
+                        <p class="font-semibold">{{ forloop.counter }}. {{ ans.question.question_text }}</p>
+
+                        <p class="text-sm mt-2">
+                            Your Answer:
+                            <span class="font-semibold">{{ ans.selected_option|default:"-" }}</span>
+                        </p>
+
+                        <p class="text-sm">
+                            Correct Answer:
+                            <span class="font-semibold">{{ ans.question.correct_option }}</span>
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        {% else %}
+            <div class="bg-green-50 border border-green-200 text-green-700 rounded-2xl p-6">
+                <h3 class="text-xl font-bold mb-2">Exam Submitted Successfully</h3>
+                <p>
+                    Your CBT exam has been submitted. Your score will be released by the school when results are published.
+                </p>
+            </div>
+            <div class="mt-4 bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Submitted At</p>
+                <p class="font-semibold">{{ attempt.submitted_at }}</p>
+            </div>
+        {% endif %}
+
+    </div>
+
+    {% if attempt.was_auto_submitted %}
+    <div class="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4">
+        This exam was auto-submitted.
+        {% if attempt.auto_submit_reason %}
+            Reason: {{ attempt.auto_submit_reason }}
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

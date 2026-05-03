@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-slate-800">Bulk Print Class Results</h1>
+        <p class="text-slate-500 mt-1">
+            Select class, session, and term to print all published student result sheets.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <form method="get" action="{% url 'bulk_class_result_print' %}" class="space-y-5">
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Class</label>
+                <select name="class_id" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    <option value="">Select Class</option>
+                    {% for class in classes %}
+                        <option value="{{ class.id }}">{{ class.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Session</label>
+                <select name="session_id" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    <option value="">Select Session</option>
+                    {% for session in sessions %}
+                        <option value="{{ session.id }}">{{ session.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Term</label>
+                <select name="term_id" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    <option value="">Select Term</option>
+                    {% for term in terms %}
+                        <option value="{{ term.id }}">{{ term.get_name_display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow">
+                    Continue to Print
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+{% endblock %}

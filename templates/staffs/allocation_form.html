@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Assign Teacher</h3>
+        <p class="text-slate-500 mb-6">Assign a teacher to a class and subject for a specific session and term.</p>
+
+        <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Teacher</label>
+                {{ form.teacher }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Class</label>
+                {{ form.school_class }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Subject</label>
+                {{ form.subject }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Session</label>
+                {{ form.session }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Term</label>
+                {{ form.term }}
+            </div>
+
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold">
+                    Save Allocation
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const teacherField = document.getElementById("id_teacher");
+    const classField = document.getElementById("id_school_class");
+    const sessionField = document.getElementById("id_session");
+    const termField = document.getElementById("id_term");
+    const subjectField = document.getElementById("id_subject");
+
+    function loadSubjects() {
+        const teacher = teacherField.value;
+        const cls = classField.value;
+        const session = sessionField.value;
+        const term = termField.value;
+
+        subjectField.innerHTML = '<option value="">Loading...</option>';
+
+        if (!teacher || !cls || !session || !term) {
+            subjectField.innerHTML = '<option value="">Select all fields first</option>';
+            return;
+        }
+
+        fetch(`/staffs/available-subjects/?teacher_id=${teacher}&class_id=${cls}&session_id=${session}&term_id=${term}`)
+            .then(res => res.json())
+            .then(data => {
+                subjectField.innerHTML = "";
+
+                if (data.subjects.length === 0) {
+                    subjectField.innerHTML = '<option value="">All subjects already assigned</option>';
+                    return;
+                }
+
+                subjectField.innerHTML = '<option value="">Select subject</option>';
+
+                data.subjects.forEach(sub => {
+                    const option = document.createElement("option");
+                    option.value = sub.id;
+                    option.textContent = sub.name;
+                    subjectField.appendChild(option);
+                });
+            });
+    }
+
+    [teacherField, classField, sessionField, termField].forEach(field => {
+        field.addEventListener("change", loadSubjects);
+    });
+
+    loadSubjects();
+</script>
+{% endblock %}

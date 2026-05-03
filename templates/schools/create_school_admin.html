@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Create School Admin</h3>
+        <p class="text-slate-500 mb-6">Create an admin account for a selected school.</p>
+
+        <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium mb-2">School</label>
+                {{ form.school }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Username</label>
+                {{ form.username }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">First Name</label>
+                {{ form.first_name }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Last Name</label>
+                {{ form.last_name }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Email</label>
+                {{ form.email }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Phone</label>
+                {{ form.phone }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Gender</label>
+                {{ form.gender }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Password</label>
+                {{ form.password }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Confirm Password</label>
+                {{ form.confirm_password }}
+            </div>
+
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                    Create School Admin
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

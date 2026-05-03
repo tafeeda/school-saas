@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Payment Failed" page_subtitle="We could not confirm your payment" %}
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-3xl">
+    <p class="text-slate-700">
+        Your payment could not be confirmed. Please try again or contact the administrator if the issue persists.
+    </p>
+
+    <div class="mt-6 flex gap-3">
+        <a href="{% url 'school_subscription_status' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl">
+            Back to Subscription
+        </a>
+        <a href="{% url 'dashboard_redirect' %}" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl">
+            Go to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

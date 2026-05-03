@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Bulk Create Result Sheets</h3>
+        <p class="text-slate-500 mb-6">
+            Create result sheets for all students in a selected class, session, and term.
+        </p>
+
+        <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Class</label>
+                <select name="school_class" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    <option value="">Select class</option>
+                    {% for item in classes %}
+                        <option value="{{ item.id }}">{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Session</label>
+                <select name="session" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    <option value="">Select session</option>
+                    {% for item in sessions %}
+                        <option value="{{ item.id }}">{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Term</label>
+                <select name="term" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    <option value="">Select term</option>
+                    {% for item in terms %}
+                        <option value="{{ item.id }}">{{ item.get_name_display }} - {{ item.session.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Grading Scheme</label>
+                <select name="grading_scheme" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    <option value="">Select grading scheme</option>
+                    {% for item in grading_schemes %}
+                        <option value="{{ item.id }}">{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Assessment Template</label>
+                <select name="assessment_template" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    <option value="">Select assessment template</option>
+                    {% for item in assessment_templates %}
+                        <option value="{{ item.id }}">{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Attendance Present</label>
+                <input type="number" name="attendance_present" value="0" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Attendance Total</label>
+                <input type="number" name="attendance_total" value="0" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Next Resumption Date</label>
+                <input type="date" name="next_resumption_date" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+            </div>
+
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold">
+                    Create Result Sheets for Class
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

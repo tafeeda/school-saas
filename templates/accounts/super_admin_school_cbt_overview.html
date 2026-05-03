@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Schools & CBT Records" page_subtitle="View CBT activity across all schools" %}
+
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+    <table class="w-full text-left">
+        <thead>
+            <tr class="border-b border-slate-200">
+                <th class="py-3">School</th>
+                <th class="py-3">Code</th>
+                <th class="py-3">CBT Enabled</th>
+                <th class="py-3">Students</th>
+                <th class="py-3">CBT Attempts</th>
+                <th class="py-3">Status</th>
+                <th class="py-3">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for school in schools %}
+            <tr class="border-b border-slate-100">
+                <td class="py-3 font-semibold">{{ school.name }}</td>
+                <td class="py-3">{{ school.code }}</td>
+                <td class="py-3">
+                    {% if school.enable_cbt %}
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">Enabled</span>
+                    {% else %}
+                        <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">Disabled</span>
+                    {% endif %}
+                </td>
+                <td class="py-3">{{ school.total_students_count }}</td>
+                <td class="py-3">{{ school.total_cbt_attempts }}</td>
+                <td class="py-3">
+                    {% if school.is_active %}
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">Active</span>
+                    {% else %}
+                        <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="py-3">
+                    <a href="{% url 'super_admin_school_students_cbt' school.id %}" class="text-blue-600 hover:underline">
+                        View Students
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="py-4 text-slate-500">No schools found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

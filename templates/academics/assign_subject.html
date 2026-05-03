@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Assign Subject to Class</h3>
+        <p class="text-slate-500 mb-6">Link subjects to specific classes.</p>
+
+        <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="md:col-span-2 rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Class</label>
+                {{ form.school_class }}
+                <p class="text-red-500 text-sm mt-1">{{ form.school_class.errors }}</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Subject</label>
+                {{ form.subject }}
+                <p class="text-red-500 text-sm mt-1">{{ form.subject.errors }}</p>
+            </div>
+
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold">
+                    Save Assignment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const classSelect = document.getElementById("id_school_class");
+    const subjectSelect = document.getElementById("id_subject");
+
+    function loadAvailableSubjects() {
+        const classId = classSelect.value;
+
+        subjectSelect.innerHTML = '<option value="">Loading subjects...</option>';
+
+        if (!classId) {
+            subjectSelect.innerHTML = '<option value="">Select class first</option>';
+            return;
+        }
+
+        fetch(`/academics/available-subjects/?class_id=${classId}`)
+            .then(response => response.json())
+            .then(data => {
+                subjectSelect.innerHTML = "";
+
+                if (data.subjects.length === 0) {
+                    subjectSelect.innerHTML = '<option value="">All subjects already assigned</option>';
+                    return;
+                }
+
+                subjectSelect.innerHTML = '<option value="">Select subject</option>';
+
+                data.subjects.forEach(subject => {
+                    const option = document.createElement("option");
+                    option.value = subject.id;
+                    option.textContent = subject.name;
+                    subjectSelect.appendChild(option);
+                });
+            });
+    }
+
+    if (classSelect && subjectSelect) {
+        classSelect.addEventListener("change", loadAvailableSubjects);
+        loadAvailableSubjects();
+    }
+</script>
+{% endblock %}

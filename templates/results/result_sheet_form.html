@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-5xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Create Result Sheet</h3>
+        <p class="text-slate-500 mb-6">Set up a student's result record for a specific class, session, and term.</p>
+
+        <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <div class="md:col-span-2 rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3">
+                <strong>Please fix the errors below:</strong>
+                <ul class="mt-2 list-disc list-inside">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div><label class="block text-sm font-medium mb-2">Student</label>{{ form.student }}</div>
+            <div><label class="block text-sm font-medium mb-2">Class</label>{{ form.school_class }}</div>
+            <div><label class="block text-sm font-medium mb-2">Session</label>{{ form.session }}</div>
+            <div><label class="block text-sm font-medium mb-2">Term</label>{{ form.term }}</div>
+            <div><label class="block text-sm font-medium mb-2">Grading Scheme</label>{{ form.grading_scheme }}</div>
+            <div><label class="block text-sm font-medium mb-2">Assessment Template</label>{{ form.assessment_template }}</div>
+            <div><label class="block text-sm font-medium mb-2">Attendance Present</label>{{ form.attendance_present }}</div>
+            <div><label class="block text-sm font-medium mb-2">Attendance Total</label>{{ form.attendance_total }}</div>
+            <div><label class="block text-sm font-medium mb-2">Next Resumption Date</label>{{ form.next_resumption_date }}</div>
+            <div class="md:col-span-2"><label class="block text-sm font-medium mb-2">Teacher Comment</label>{{ form.teacher_comment }}</div>
+            <div class="md:col-span-2"><label class="block text-sm font-medium mb-2">Head Teacher Comment</label>{{ form.headteacher_comment }}</div>
+
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                    Save Result Sheet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const studentField = document.getElementById("id_student");
+    const classField = document.getElementById("id_school_class");
+    const sessionField = document.getElementById("id_session");
+    const termField = document.getElementById("id_term");
+
+    function loadAvailableStudents() {
+        const classId = classField.value;
+        const sessionId = sessionField.value;
+        const termId = termField.value;
+
+        if (!classId || !sessionId || !termId) {
+            studentField.innerHTML = '<option value="">Select class, session and term first</option>';
+            return;
+        }
+
+        studentField.innerHTML = '<option value="">Loading students...</option>';
+
+        fetch(`/results/available-students-for-result-sheet/?class_id=${classId}&session_id=${sessionId}&term_id=${termId}`)
+            .then(response => response.json())
+            .then(data => {
+                studentField.innerHTML = "";
+
+                if (data.students.length === 0) {
+                    studentField.innerHTML = '<option value="">All students already have result sheets</option>';
+                    return;
+                }
+
+                studentField.innerHTML = '<option value="">Select student</option>';
+
+                data.students.forEach(student => {
+                    const option = document.createElement("option");
+                    option.value = student.id;
+                    option.textContent = student.name;
+                    studentField.appendChild(option);
+                });
+            });
+    }
+
+    if (studentField && classField && sessionField && termField) {
+        classField.addEventListener("change", loadAvailableStudents);
+        sessionField.addEventListener("change", loadAvailableStudents);
+        termField.addEventListener("change", loadAvailableStudents);
+
+        loadAvailableStudents();
+    }
+</script>
+{% endblock %}

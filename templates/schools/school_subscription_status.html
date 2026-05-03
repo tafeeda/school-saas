@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Subscription" page_subtitle=request.user.school.name %}
+
+{% if request.user.school.subscription_end_date %}
+<div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl p-4 mb-4">
+    Current subscription ends on {{ request.user.school.subscription_end_date }}.
+</div>
+{% endif %}
+
+<div class="space-y-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-4xl">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Payment Method</p>
+                <p class="font-semibold">{{ request.user.school.get_payment_method_display }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Online Payment Enabled</p>
+                <p class="font-semibold">
+                    {% if request.user.school.online_payment_enabled %}Yes{% else %}No{% endif %}
+                </p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Subscription Amount</p>
+                <p class="font-semibold">{{ request.user.school.subscription_amount }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Subscription End Date</p>
+                <p class="font-semibold">{{ request.user.school.subscription_end_date|default:"-" }}</p>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <p class="text-sm text-slate-500 mt-2">
+                Online payment is available only when enabled by the platform administrator.
+            </p>
+            {% if request.user.school.payment_method == "ONLINE" and request.user.school.online_payment_enabled %}
+                <a href="{% url 'school_paystack_pay' %}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold">
+                    Pay Now with Paystack
+                </a>
+            {% else %}
+                <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl p-4">
+                    Online payment is not enabled for your school. Please contact the administrator or make payment offline.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

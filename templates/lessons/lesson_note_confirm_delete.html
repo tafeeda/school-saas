@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-xl font-bold text-red-600">Delete Lesson Note</h3>
+        <p class="text-slate-500 mt-2">
+            Are you sure you want to delete "{{ note.title }}"?
+        </p>
+
+        <form method="post" class="mt-6">
+            {% csrf_token %}
+            <div class="flex gap-4">
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-xl">
+                    Yes, Delete
+                </button>
+                <a href="{% url 'lesson_note_detail' note.pk %}" class="bg-slate-200 px-4 py-2 rounded-xl">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

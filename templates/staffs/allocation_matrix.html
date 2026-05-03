@@ -1,0 +1,77 @@
+
+{% extends "base.html" %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <h3 class="text-2xl font-bold">Allocation Matrix</h3>
+        <p class="text-slate-500">Overview of teacher assignments per class and subject.</p>
+
+        <!-- 🔥 FILTER FORM -->
+        <form method="get" class="mt-4 flex gap-4">
+            <select name="session" class="border rounded px-3 py-2">
+                <option value="">All Sessions</option>
+                {% for s in sessions %}
+                    <option value="{{ s.id }}" {% if selected_session == s.id|stringformat:"s" %}selected{% endif %}>
+                        {{ s.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <select name="term" class="border rounded px-3 py-2">
+                <option value="">All Terms</option>
+                {% for t in terms %}
+                    <option value="{{ t.id }}" {% if selected_term == t.id|stringformat:"s" %}selected{% endif %}>
+                        {{ t.get_name_display }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button class="bg-blue-600 text-white px-4 py-2 rounded">
+                Filter
+            </button>
+        </form>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <table class="min-w-full text-sm">
+            <thead>
+                <tr class="border-b">
+                    <th class="py-3 px-3 text-left">Class</th>
+                    {% for subject in subjects %}
+                        <th class="py-3 px-3 text-left">{{ subject.name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for cls in classes %}
+                    <tr class="border-b">
+                        <td class="py-3 px-3 font-semibold">
+                            {{ cls.name }}
+                        </td>
+
+                        {% for subject in subjects %}
+                            <td class="py-3 px-3">
+                                {% with teacher=matrix|dictget:cls.id|dictget:subject.id %}
+                                    {% if teacher %}
+                                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-lg text-xs">
+                                        {{ teacher }}
+                                    </span>
+                                {% else %}
+                                    <a href="{% url 'allocation_create' %}?class={{ cls.id }}&subject={{ subject.id }}"
+                                    class="bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-xs hover:bg-blue-200">
+                                        + Assign
+                                    </a>
+                                {% endif %}
+                                {% endwith %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

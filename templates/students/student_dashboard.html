@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Student Dashboard" page_subtitle=student.full_name %}
+
+<div class="space-y-6">
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex flex-col md:flex-row gap-6">
+            <div>
+                {% if student.passport %}
+                    <img src="{{ student.passport.url }}" class="w-32 h-32 rounded-2xl object-cover border">
+                {% else %}
+                    <div class="w-32 h-32 rounded-2xl bg-slate-200"></div>
+                {% endif %}
+            </div>
+
+            <div class="flex-1">
+                <h3 class="text-2xl font-bold">{{ student.full_name }}</h3>
+                <p class="text-slate-500 mt-1">Admission No: {{ student.admission_number }}</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">School</p>
+                        <p class="font-semibold">{{ student.school.name }}</p>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Class</p>
+                        <p class="font-semibold">{{ student.current_class.name|default:"-" }}</p>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Session</p>
+                        <p class="font-semibold">{{ student.current_session.name|default:"-" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        {% if student.school.enable_cbt %}
+        <a href="{% url 'student_cbt_exam_list' %}" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition">
+            <h4 class="text-xl font-semibold">CBT Exams</h4>
+            <p class="text-slate-500 mt-2">Take available computer-based exams.</p>
+        </a>
+        {% endif %}
+
+        {% if student.school.enable_cbt %}
+        <a href="{% url 'student_cbt_history' %}" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition">
+            <h4 class="text-xl font-semibold">My CBT History</h4>
+            <p class="text-slate-500 mt-2">View all exams you have taken and scores.</p>
+        </a>
+        {% endif %}
+
+        <a href="{% url 'student_academic_info' %}" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition">
+            <h4 class="text-xl font-semibold">My Academic Info</h4>
+            <p class="text-slate-500 mt-2">View your class, session and profile details.</p>
+        </a>
+
+        <a href="{% url 'student_results' %}" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition">
+            <h4 class="text-xl font-semibold">Result Checking Details</h4>
+            <p class="text-slate-500 mt-2">View your surname and passkey when results are published.</p>
+        </a>
+
+        <a href="{% url 'student_analytics' %}"
+           class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition">
+            <h4 class="text-xl font-semibold">My Analytics</h4>
+            <p class="text-slate-500 mt-2">Track your performance and progress.</p>
+        </a>
+
+    </div>
+
+</div>
+{% endblock %}

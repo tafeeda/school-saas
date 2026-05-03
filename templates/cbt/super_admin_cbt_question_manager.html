@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Super Admin CBT Question Manager</h1>
+        <p class="text-slate-500 mt-1">
+            View CBT exam questions from any school and copy questions between CBT Exams and Question Bank.
+        </p>
+    </div>
+
+    <form method="get" id="filterForm" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <div>
+            <label class="block text-sm font-semibold mb-1">School</label>
+            <select name="school" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                <option value="">Select School</option>
+                {% for school in schools %}
+                    <option value="{{ school.id }}" {% if selected_school_id|stringformat:"s" == school.id|stringformat:"s" %}selected{% endif %}>
+                        {{ school.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-1">CBT Exam</label>
+            <select name="exam" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                <option value="">Select Exam</option>
+                {% for exam in exams %}
+                    <option value="{{ exam.id }}" {% if selected_exam_id|stringformat:"s" == exam.id|stringformat:"s" %}selected{% endif %}>
+                        {{ exam.title }} - {{ exam.school_class.name }} - {{ exam.subject.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <input type="hidden" name="exam_search" value="{{ exam_search }}">
+        <input type="hidden" name="bank_search" value="{{ bank_search }}">
+
+        <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+            Load Questions
+        </button>
+    </form>
+
+    {% if selected_exam %}
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-4">
+            <p class="text-sm text-slate-500">School</p>
+            <p class="font-semibold">{{ selected_exam.school.name }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-4">
+            <p class="text-sm text-slate-500">Exam</p>
+            <p class="font-semibold">{{ selected_exam.title }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-4">
+            <p class="text-sm text-slate-500">Class</p>
+            <p class="font-semibold">{{ selected_exam.school_class.name }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-4">
+            <p class="text-sm text-slate-500">Subject</p>
+            <p class="font-semibold">{{ selected_exam.subject.name }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if selected_exam %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Exam Questions to Bank -->
+        <form method="post" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            {% csrf_token %}
+            <input type="hidden" name="school" value="{{ selected_school_id }}">
+            <input type="hidden" name="exam" value="{{ selected_exam_id }}">
+            <input type="hidden" name="action" value="exam_to_bank">
+
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-xl font-bold">Exam Questions</h2>
+                    <p class="text-sm text-slate-500">Copy selected exam questions to Question Bank.</p>
+                </div>
+
+                <button type="submit" onclick="return confirm('Copy selected exam questions to Question Bank?')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+                    Copy to Bank
+                </button>
+            </div>
+
+            <div class="mb-4 flex gap-2">
+                <input type="text"
+                       name="exam_search"
+                       value="{{ exam_search }}"
+                       form="filterForm"
+                       placeholder="Search exam questions..."
+                       class="w-full rounded-xl border border-slate-300 px-4 py-3">
+
+                <button type="submit"
+                        form="filterForm"
+                        class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-xl">
+                    Search
+                </button>
+            </div>
+
+            <div class="mb-4">
+                <label class="inline-flex items-center gap-2 font-semibold">
+                    <input type="checkbox" id="selectAllExamQuestions" class="h-5 w-5">
+                    Select All Exam Questions
+                </label>
+            </div>
+
+            <div class="space-y-4 max-h-[650px] overflow-y-auto pr-2">
+                {% for question in exam_questions %}
+                    <label class="block border border-slate-200 rounded-xl p-4 hover:bg-slate-50">
+                        <div class="flex gap-3">
+                            <input type="checkbox" name="exam_question_ids" value="{{ question.id }}" class="exam-question-checkbox mt-1 h-5 w-5">
+
+                            <div>
+                                <p class="font-semibold">
+                                    {{ forloop.counter }}.
+                                    <span class="math-content">{{ question.question_text|safe }}</span>
+                                </p>
+
+                                {% if question.question_image %}
+                                    <img src="{{ question.question_image.url }}" class="mt-2 w-24 h-24 object-cover rounded-lg border">
+                                {% endif %}
+
+                                <div class="text-sm text-slate-600 mt-2 space-y-1">
+                                    <p>A. <span class="math-content">{{ question.option_a|safe }}</span></p>
+                                    <p>B. <span class="math-content">{{ question.option_b|safe }}</span></p>
+                                    <p>C. <span class="math-content">{{ question.option_c|safe }}</span></p>
+                                    <p>D. <span class="math-content">{{ question.option_d|safe }}</span></p>
+                                    <p class="font-semibold">Correct: {{ question.correct_option }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                {% empty %}
+                    <p class="text-slate-500">No exam questions found.</p>
+                {% endfor %}
+            </div>
+        </form>
+
+        <!-- Bank Questions to Exam -->
+        <form method="post" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            {% csrf_token %}
+            <input type="hidden" name="school" value="{{ selected_school_id }}">
+            <input type="hidden" name="exam" value="{{ selected_exam_id }}">
+            <input type="hidden" name="action" value="bank_to_exam">
+
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-xl font-bold">Question Bank</h2>
+                    <p class="text-sm text-slate-500">Copy selected bank questions to this CBT exam.</p>
+                </div>
+
+                <button type="submit" onclick="return confirm('Copy selected bank questions to this CBT exam?')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl">
+                    Copy to Exam
+                </button>
+            </div>
+
+            <div class="mb-4 flex gap-2">
+                <input type="text"
+                       name="bank_search"
+                       value="{{ bank_search }}"
+                       form="filterForm"
+                       placeholder="Search question bank..."
+                       class="w-full rounded-xl border border-slate-300 px-4 py-3">
+
+                <button type="submit"
+                        form="filterForm"
+                        class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-xl">
+                    Search
+                </button>
+            </div>
+
+            <div class="mb-4">
+                <label class="inline-flex items-center gap-2 font-semibold">
+                    <input type="checkbox" id="selectAllBankQuestions" class="h-5 w-5">
+                    Select All Bank Questions
+                </label>
+            </div>
+
+            <div class="space-y-4 max-h-[650px] overflow-y-auto pr-2">
+                {% for question in bank_questions %}
+                    <label class="block border border-slate-200 rounded-xl p-4 hover:bg-slate-50">
+                        <div class="flex gap-3">
+                            <input type="checkbox" name="bank_question_ids" value="{{ question.id }}" class="bank-question-checkbox mt-1 h-5 w-5">
+
+                            <div>
+                                <p class="font-semibold">
+                                    {{ forloop.counter }}.
+                                    <span class="math-content">{{ question.question_text|safe }}</span>
+                                </p>
+
+                                {% if question.question_image %}
+                                    <img src="{{ question.question_image.url }}" class="mt-2 w-24 h-24 object-cover rounded-lg border">
+                                {% endif %}
+
+                                <div class="text-sm text-slate-600 mt-2 space-y-1">
+                                    <p>Class: {{ question.school_class.name }}</p>
+                                    <p>Subject: {{ question.subject.name }}</p>
+                                    <p>A. <span class="math-content">{{ question.option_a|safe }}</span></p>
+                                    <p>B. <span class="math-content">{{ question.option_b|safe }}</span></p>
+                                    <p>C. <span class="math-content">{{ question.option_c|safe }}</span></p>
+                                    <p>D. <span class="math-content">{{ question.option_d|safe }}</span></p>
+                                    <p class="font-semibold">Correct: {{ question.correct_option }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                {% empty %}
+                    <p class="text-slate-500">No question bank questions found for this school.</p>
+                {% endfor %}
+            </div>
+        </form>
+
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+    const selectAllExam = document.getElementById("selectAllExamQuestions");
+    const selectAllBank = document.getElementById("selectAllBankQuestions");
+
+    if (selectAllExam) {
+        selectAllExam.addEventListener("change", function () {
+            document.querySelectorAll(".exam-question-checkbox").forEach(function (box) {
+                box.checked = selectAllExam.checked;
+            });
+        });
+    }
+
+    if (selectAllBank) {
+        selectAllBank.addEventListener("change", function () {
+            document.querySelectorAll(".bank-question-checkbox").forEach(function (box) {
+                box.checked = selectAllBank.checked;
+            });
+        });
+    }
+</script>
+{% endblock %}

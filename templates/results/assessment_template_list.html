@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h3 class="text-2xl font-bold">Assessment Templates</h3>
+            <p class="text-slate-500">Define total score structures like 100 marks.</p>
+        </div>
+        <a href="{% url 'assessment_template_create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+            Create Assessment Template
+        </a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Name</th>
+                    <th class="py-3">Total Score</th>
+                    <th class="py-3">Default</th>
+                    <th class="py-3">Status</th>
+                    <th class="py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in templates %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3 font-medium">{{ item.name }}</td>
+                    <td class="py-3">{{ item.total_score }}</td>
+                    <td class="py-3">{% if item.is_default %}Yes{% else %}No{% endif %}</td>
+                    <td class="py-3">{% if item.is_active %}Active{% else %}Inactive{% endif %}</td>
+                    <td class="py-3 flex gap-3">
+                        <a href="{% url 'assessment_template_update' item.pk %}" class="text-blue-600 hover:underline">Edit</a>
+                        <a href="{% url 'assessment_template_delete' item.pk %}" class="text-red-600 hover:underline">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="py-4 text-slate-500">No assessment templates created yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

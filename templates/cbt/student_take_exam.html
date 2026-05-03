@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+{% load cbt_extras %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title=exam.title page_subtitle="Answer all questions before time runs out" %}
+<div class="space-y-6">
+
+    <!-- Timer Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="text-slate-500">
+                {{ exam.subject.name }} | {{ exam.school_class.name }} | {{ exam.duration_minutes }} mins
+            </div>
+            <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-2 font-semibold">
+                Time Left: <span id="timer"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Summary -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+            <div>
+                <p class="text-sm text-slate-500">Progress</p>
+                <p class="font-semibold">
+                    Answered: <span id="answered-count">0</span> / <span id="total-count">0</span>
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 text-sm">
+                <span class="inline-flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-slate-300"></span> Unanswered
+                </span>
+                <span class="inline-flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-green-600"></span> Answered
+                </span>
+                <span class="inline-flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-amber-500"></span> Review
+                </span>
+                <span class="inline-flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-slate-900"></span> Current
+                </span>
+            </div>
+        </div>
+
+        <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+            <div id="progress-bar" class="bg-green-600 h-3 rounded-full transition-all" style="width: 0%;"></div>
+        </div>
+    </div>
+
+    <!-- Question Navigation Panel -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex flex-wrap gap-2" id="question-nav">
+            {% for item in question_display_data %}
+                <button type="button"
+                        class="q-nav-btn px-3 py-2 rounded-lg border text-sm"
+                        data-index="{{ forloop.counter0 }}"
+                        id="nav-btn-{{ forloop.counter0 }}">
+                    {{ forloop.counter }}
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <form method="post" id="cbt-form" class="space-y-6">
+        {% csrf_token %}
+
+        {% for item in question_display_data %}
+        {% with question=item.question %}
+        <div id="question-{{ forloop.counter0 }}" class="question-block bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hidden">
+            <p class="font-semibold mb-4">
+                {{ forloop.counter }}.
+                <span class="math-content">{{ question.question_text|safe }}</span>
+            </p>
+
+            {% if question.question_image %}
+                <div class="mb-4">
+                    <img src="{{ question.question_image.url }}" alt="Question image" class="max-w-full rounded-xl border border-slate-200 shadow-sm">
+                </div>
+            {% endif %}
+
+
+            <div class="space-y-3">
+                {% for opt in item.display_options %}
+                    <label class="flex items-start gap-3">
+                        <input type="radio" name="question_{{ question.id }}" value="{{ opt.key }}"
+                            {% if existing_answers|get_item:question.id == opt.key %}checked{% endif %}>
+                        <span>
+                            <strong>{{ opt.label }}.</strong>
+                            <span class="math-content">{{ opt.text|safe }}</span>
+                        </span>
+                    </label>
+                {% endfor %}
+            </div>
+
+            <!-- Previous / Next Navigation -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mt-6">
+                <button type="button" onclick="prevQuestion()" class="bg-slate-200 px-4 py-2 rounded-xl">
+                    Previous
+                </button>
+
+                <button type="button"
+                        data-index="{{ forloop.counter0 }}"
+                        class="review-btn bg-amber-500 text-white px-4 py-2 rounded-xl">
+                    Mark for Review
+                </button>
+
+                <button type="button" onclick="nextQuestion()" class="bg-blue-600 text-white px-4 py-2 rounded-xl">
+                    Next
+                </button>
+            </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+
+        <div class="flex justify-end">
+            <button type="button" onclick="openSubmitModal()" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                Submit Exam
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Submit Confirmation Modal -->
+<div id="submit-modal" class="hidden fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+        <h3 class="text-xl font-bold mb-3">Submit Exam?</h3>
+        <p class="text-slate-600 mb-4">
+            You have answered <span id="modal-answered-count">0</span> out of <span id="modal-total-count">0</span> questions.
+        </p>
+        <p class="text-red-600 text-sm mb-6">
+            Once submitted, you cannot return to this exam.
+        </p>
+
+        <div class="flex gap-3 justify-end">
+            <button type="button" onclick="closeSubmitModal()" class="bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-xl">
+                Continue Exam
+            </button>
+
+            <button type="button" onclick="confirmSubmitExam()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl">
+                Yes, Submit
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="radio"]:checked + span {
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    let remainingSeconds = Number('{{ remaining_seconds|default:0|escapejs }}');
+    const timerEl = document.getElementById("timer");
+    const formEl = document.getElementById("cbt-form");
+    const attemptId = "{{ attempt.id }}";
+    let examFinished = false;
+    let currentQuestion = 0;
+    const totalQuestions = document.querySelectorAll(".question-block").length;
+    const reviewQuestions = new Set();
+    const answeredCountEl = document.getElementById("answered-count");
+    const totalCountEl = document.getElementById("total-count");
+    const progressBarEl = document.getElementById("progress-bar");
+    const modalAnsweredCountEl = document.getElementById("modal-answered-count");
+    const modalTotalCountEl = document.getElementById("modal-total-count");
+    const submitModal = document.getElementById("submit-modal");
+
+    function refreshAnsweredStatus() {
+        let answeredCount = 0;
+
+        document.querySelectorAll(".question-block").forEach((block, index) => {
+            const hasChecked = block.querySelector('input[type="radio"]:checked');
+            const btn = document.getElementById(`nav-btn-${index}`);
+
+            btn.classList.remove(
+                "bg-green-600",
+                "bg-amber-500",
+                "bg-slate-900",
+                "text-white"
+            );
+
+            if (hasChecked) {
+                answeredCount += 1;
+            }
+
+            if (index === currentQuestion) {
+                btn.classList.add("bg-slate-900", "text-white");
+            } else if (reviewQuestions.has(index)) {
+                btn.classList.add("bg-amber-500", "text-white");
+            } else if (hasChecked) {
+                btn.classList.add("bg-green-600", "text-white");
+            }
+        });
+
+        answeredCountEl.textContent = answeredCount;
+        totalCountEl.textContent = totalQuestions;
+        modalAnsweredCountEl.textContent = answeredCount;
+        modalTotalCountEl.textContent = totalQuestions;
+
+        const percent = totalQuestions ? (answeredCount / totalQuestions) * 100 : 0;
+        progressBarEl.style.width = `${percent}%`;
+    }
+
+    function showQuestion(index) {
+        document.querySelectorAll(".question-block").forEach((el, i) => {
+            el.classList.toggle("hidden", i !== index);
+        });
+
+        currentQuestion = index;
+        refreshAnsweredStatus();
+    }
+
+    function goToQuestion(index) {
+        showQuestion(index);
+    }
+
+    function nextQuestion() {
+        if (currentQuestion < totalQuestions - 1) {
+            showQuestion(currentQuestion + 1);
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestion > 0) {
+            showQuestion(currentQuestion - 1);
+        }
+    }
+
+    function toggleReview(index) {
+        if (reviewQuestions.has(index)) {
+            reviewQuestions.delete(index);
+        } else {
+            reviewQuestions.add(index);
+        }
+
+        refreshAnsweredStatus();
+    }
+
+    function openSubmitModal() {
+        refreshAnsweredStatus();
+        submitModal.classList.remove("hidden");
+    }
+
+    function closeSubmitModal() {
+        submitModal.classList.add("hidden");
+    }
+
+    function confirmSubmitExam() {
+        examFinished = true;
+
+        const hiddenSubmit = document.createElement("input");
+        hiddenSubmit.type = "hidden";
+        hiddenSubmit.name = "submit_exam";
+        hiddenSubmit.value = "1";
+        formEl.appendChild(hiddenSubmit);
+
+        formEl.submit();
+    }
+
+    function updateTimer() {
+        const minutes = Math.floor(remainingSeconds / 60);
+        const seconds = remainingSeconds % 60;
+        timerEl.textContent = `${minutes}:${String(seconds).padStart(2, '0')}`;
+
+        if (remainingSeconds <= 0 && !examFinished) {
+            autoSubmitExam("time");
+            return;
+        }
+
+        remainingSeconds -= 1;
+    }
+
+    function getCsrfToken() {
+        const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+        return csrfInput ? csrfInput.value : "";
+    }
+
+    async function autoSubmitExam(reason) {
+        if (examFinished) return;
+        examFinished = true;
+
+        const formData = new FormData(formEl);
+
+        try {
+            const response = await fetch(`/cbt/student/attempt/${attemptId}/force-submit/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCsrfToken(),
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            if (data.redirect_url) {
+                window.location.href = data.redirect_url;
+            }
+        } catch (error) {
+            formEl.submit();
+        }
+    }
+
+    async function recordTabSwitch() {
+        if (examFinished) return;
+
+        try {
+            const response = await fetch(`/cbt/student/attempt/${attemptId}/tab-switch/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCsrfToken(),
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.status === "warning") {
+                alert(`Warning: You switched tabs/windows. Remaining chances: ${data.remaining}`);
+            } else if (data.status === "auto_submitted" && data.redirect_url) {
+                alert("Exam auto-submitted due to too many tab switches.");
+                window.location.href = data.redirect_url;
+            }
+        } catch (error) {
+            console.log("Tab switch tracking failed.");
+        }
+    }
+
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            recordTabSwitch();
+        }
+    });
+
+    window.addEventListener("blur", function () {
+        recordTabSwitch();
+    });
+
+    document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener("copy", function (e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener("paste", function (e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "F12") {
+            e.preventDefault();
+        }
+
+        if (
+            (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) ||
+            (e.ctrlKey && ["U", "C", "V", "X"].includes(e.key.toUpperCase()))
+        ) {
+            e.preventDefault();
+        }
+    });
+
+    if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+    }
+
+    document.querySelectorAll(".q-nav-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+            const index = Number(this.dataset.index);
+            goToQuestion(index);
+        });
+    });
+
+    document.querySelectorAll(".review-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+            const index = Number(this.dataset.index);
+            toggleReview(index);
+        });
+    });
+
+    document.querySelectorAll('input[type="radio"]').forEach((input) => {
+        input.addEventListener("change", function () {
+            refreshAnsweredStatus();
+        });
+    });
+
+    showQuestion(0);
+    updateTimer();
+    setInterval(updateTimer, 1000);
+</script>
+{% endblock %}

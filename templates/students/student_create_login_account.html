@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Create Student Login Account" page_subtitle=student.full_name %}
+
+<div class="max-w-xl bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+    <div class="mb-6">
+        <p class="text-sm text-slate-500">Student</p>
+        <p class="font-semibold">{{ student.full_name }}</p>
+
+        <p class="text-sm text-slate-500 mt-3">Admission Number</p>
+        <p class="font-semibold">{{ student.admission_number }}</p>
+    </div>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Username</label>
+            <input type="text" name="username" required
+                   class="w-full rounded-xl border border-slate-300 px-4 py-3">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Password</label>
+            <input type="password" name="password" required
+                   class="w-full rounded-xl border border-slate-300 px-4 py-3">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Confirm Password</label>
+            <input type="password" name="confirm_password" required
+                   class="w-full rounded-xl border border-slate-300 px-4 py-3">
+        </div>
+
+        <div class="flex gap-3 pt-4">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl">
+                Create Login Account
+            </button>
+
+            <a href="{% url 'student_detail' student.id %}" class="bg-slate-100 px-5 py-3 rounded-xl">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

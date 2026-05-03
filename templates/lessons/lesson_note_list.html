@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Lesson Notes" page_subtitle="Manage uploaded lesson notes" %}
+<div class="space-y-6">
+
+    <div class="flex justify-end">
+        {% if request.user.role == "SUPER_ADMIN" or request.user.role == "SCHOOL_ADMIN" %}
+        <a href="{% url 'lesson_note_create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+            Upload Lesson Note
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">School</th>
+                    <th class="py-3">Class</th>
+                    <th class="py-3">Subject</th>
+                    <th class="py-3">Week</th>
+                    <th class="py-3">Scope</th>
+                    <th class="py-3">Title</th>
+                    <th class="py-3">Status</th>
+                    <th class="py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for note in notes %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3">{{ note.school.name }}</td>
+                    <td class="py-3">{{ note.school_class.name }}</td>
+                    <td class="py-3">{{ note.subject.name }}</td>
+                    <td class="py-3">{{ note.week }}</td>
+                    <td class="py-3">{{ note.get_scope_display }}</td>
+                    <td class="py-3 font-medium">{{ note.title }}</td>
+                    <td class="py-3">{{ note.get_status_display }}</td>
+                    <td class="py-3 flex gap-3">
+                        <a href="{% url 'lesson_note_detail' note.pk %}" class="text-blue-600 hover:underline">View</a>
+
+                        {% if request.user.role == "SUPER_ADMIN" or request.user.role == "SCHOOL_ADMIN" %}
+                            <a href="{% url 'lesson_note_update' note.pk %}" class="text-green-600 hover:underline">Edit</a>
+                            <a href="{% url 'lesson_note_delete' note.pk %}" class="text-red-600 hover:underline">Delete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="py-4 text-slate-500">No lesson notes uploaded yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

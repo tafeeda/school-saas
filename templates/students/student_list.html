@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Students" page_subtitle="Manage student records" %}
+<div class="space-y-6">
+    <div class="flex justify-end">
+        <a href="{% url 'student_create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+            Create Student
+        </a>
+    </div>
+    <div>
+        <a href="{% url 'bulk_student_upload' %}" class="bg-green-600 text-white px-4 py-2 rounded">
+            Bulk Upload Students
+        </a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Passport</th>
+                    <th class="py-3">Admission No.</th>
+                    <th class="py-3">Full Name</th>
+                    <th class="py-3">Gender</th>
+                    <th class="py-3">Class</th>
+                    <th class="py-3">Session</th>
+                    <th class="py-3">Guardian</th>
+                    <th class="py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3">
+                        {% if student.passport %}
+                            <img src="{{ student.passport.url }}" alt="{{ student.full_name }}" class="w-12 h-12 rounded-full object-cover">
+                        {% else %}
+                            <div class="w-12 h-12 rounded-full bg-slate-200"></div>
+                        {% endif %}
+                    </td>
+                    <td class="py-3">{{ student.admission_number }}</td>
+                    <td class="py-3 font-medium">{{ student.full_name }}</td>
+                    <td class="py-3">{{ student.get_gender_display }}</td>
+                    <td class="py-3">{{ student.current_class.name|default:"-" }}</td>
+                    <td class="py-3">{{ student.current_session.name|default:"-" }}</td>
+                    <td class="py-3">{{ student.guardian_name|default:"-" }}</td>
+                    <td class="py-3 flex gap-3">
+                        <a href="{% url 'student_detail' student.pk %}" class="text-blue-600 hover:underline">View</a>
+                        <a href="{% url 'student_update' student.pk %}" class="text-emerald-600 hover:underline">Edit</a>
+                        <a href="{% url 'student_move' student.pk %}" class="text-purple-600 hover:underline">Move</a>
+                        <a href="{% url 'student_history' student.pk %}" class="text-amber-600 hover:underline">History</a>
+                        <a href="{% url 'student_delete' student.pk %}" class="text-red-600 hover:underline">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="py-4 text-slate-500">No students created yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

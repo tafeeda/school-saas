@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex flex-col md:flex-row gap-6 items-start">
+            <div>
+                {% if school.logo %}
+                    <img src="{{ school.logo.url }}" alt="{{ school.name }}" class="w-28 h-28 rounded-2xl object-cover border border-slate-200">
+                {% else %}
+                    <div class="w-28 h-28 rounded-2xl bg-slate-200"></div>
+                {% endif %}
+            </div>
+
+            <div class="flex-1">
+                <h3 class="text-3xl font-bold">{{ school.name }}</h3>
+                <p class="text-slate-500 mt-1">{{ school.code }}</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Portal</p>
+                        <p class="font-semibold">{{ school.portal_subpath }}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Email</p>
+                        <p class="font-semibold">{{ school.email|default:"-" }}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Phone</p>
+                        <p class="font-semibold">{{ school.phone|default:"-" }}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Status</p>
+                        <p class="font-semibold">{% if school.is_active %}Active{% else %}Inactive{% endif %}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Result Checking</p>
+                        <p class="font-semibold">{% if school.allow_result_checking %}Enabled{% else %}Disabled{% endif %}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Trial</p>
+                        <p class="font-semibold">{% if school.is_on_trial %}Yes{% else %}No{% endif %}</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-slate-50 rounded-xl p-4">
+                    <p class="text-sm text-slate-500">Address</p>
+                    <p class="font-semibold">{{ school.address|default:"-" }}</p>
+                </div>
+
+                <div class="flex flex-wrap gap-3 mt-6">
+                    <a href="{% url 'school_update' school.pk %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+                        Edit
+                    </a>
+                    <a href="{% url 'school_toggle_status' school.pk %}" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-xl">
+                        {% if school.is_active %}Deactivate{% else %}Activate{% endif %}
+                    </a>
+                    <a href="{% url 'school_delete' school.pk %}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl">
+                        Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

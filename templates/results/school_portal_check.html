@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ school.name }} Result Checker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100 flex items-center justify-center py-10">
+    <div class="w-full max-w-2xl px-4">
+        <div class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+            <div class="bg-slate-900 text-white px-8 py-8 text-center">
+                <div class="flex items-center justify-center gap-3 mb-3">
+                    {% if school.logo %}
+                        <img src="{{ school.logo.url }}" alt="{{ school.name }}" class="w-16 h-16 rounded-xl object-cover border border-slate-700">
+                    {% endif %}
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold uppercase">{{ school.name }}</h1>
+                        <p class="text-slate-300 text-sm mt-1">Online Result Checker</p>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm">
+                    Enter student's surname and passkey to view the published result
+                </p>
+            </div>
+
+            <div class="p-8">
+                {% if result_error %}
+                    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+                        {{ result_error }}
+                    </div>
+                {% endif %}
+
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Student Surname</label>
+                        <input
+                            type="text"
+                            name="surname"
+                            class="w-full rounded-2xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter student's surname"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Passkey</label>
+                        <input
+                            type="text"
+                            name="token"
+                            class="w-full rounded-2xl border border-slate-300 px-4 py-3 uppercase focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter passkey"
+                            required
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-2xl py-3 font-semibold transition"
+                    >
+                        Check Result
+                    </button>
+                </form>
+
+                <div class="mt-8 text-sm text-slate-500 text-center">
+                    {{ school.address|default:"" }}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

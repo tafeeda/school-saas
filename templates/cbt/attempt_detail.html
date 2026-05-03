@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Attempt Detail" page_subtitle=attempt.student.full_name %}
+
+<div class="space-y-6">
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="grid grid-cols-1 md:grid-cols-7 gap-4">
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Student</p>
+                <p class="font-semibold">{{ attempt.student.full_name }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Exam</p>
+                <p class="font-semibold">{{ attempt.exam.title }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Score</p>
+                <p class="font-semibold">{{ attempt.score }}/{{ attempt.total }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Percentage</p>
+                <p class="font-semibold">{{ percentage }}%</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Tab Switches</p>
+                <p class="font-semibold">{{ attempt.tab_switch_count }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Result Transferred</p>
+                <p class="font-semibold">
+                    {% if attempt.result_transferred %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Result Transfer</p>
+                <p class="font-semibold">{{ attempt.exam.get_transfer_to_result_display }}</p>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            {% if not attempt.result_transferred %}
+                <a href="{% url 'cbt_retry_transfer' attempt.id %}"
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm">
+                    Retry Transfer
+                </a>
+            {% else %}
+                <a href="{% url 'cbt_retry_transfer' attempt.id %}"
+                   class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-xl text-sm">
+                    Force Re-transfer
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if attempt.was_auto_submitted %}
+        <div class="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4">
+            This exam was auto-submitted.
+            {% if attempt.auto_submit_reason %}
+                Reason: {{ attempt.auto_submit_reason }}
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h4 class="text-xl font-semibold mb-4">Answer Review</h4>
+
+        <div class="space-y-4">
+            {% for ans in answers %}
+                <div class="p-4 rounded-xl border
+                    {% if ans.selected_option == ans.question.correct_option %}
+                        border-green-300 bg-green-50
+                    {% else %}
+                        border-red-300 bg-red-50
+                    {% endif %}
+                ">
+                    {% if ans.question.question_image %}
+                        <div class="mb-3">
+                            <img src="{{ ans.question.question_image.url }}" class="max-w-md rounded-xl border border-slate-200">
+                        </div>
+                    {% endif %}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                        <p>
+                            Student Answer:
+                            <span class="font-semibold">{{ ans.selected_option|default:"-" }}</span>
+                        </p>
+
+                        <p>
+                            Correct Answer:
+                            <span class="font-semibold">{{ ans.question.correct_option }}</span>
+                        </p>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-slate-500">No answers recorded for this attempt.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Add CBT Question" page_subtitle=exam.title %}
+
+<style>
+    .symbol-btn {
+        padding: 7px 11px;
+        border-radius: 10px;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .symbol-btn:hover {
+        background: #e2e8f0;
+    }
+</style>
+
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-5xl">
+
+    <div class="mb-6 bg-blue-50 border border-blue-200 rounded-2xl p-4">
+        <p class="font-semibold text-blue-800 mb-2">Math / Science Symbols Helper</p>
+
+        <div class="flex flex-wrap gap-2">
+            <button type="button" class="symbol-btn" onclick="insertSymbol('¹')">x¹</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('²')">x²</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('³')">x³</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('⁴')">x⁴</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('⁵')">x⁵</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('⁶')">x⁶</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('⁷')">x⁷</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('⁸')">x⁸</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('⁹')">x⁹</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('⁰')">x⁰</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('₀')">₀</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('₁')">₁</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('₂')">₂</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('₃')">₃</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('₄')">₄</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('₅')">₅</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('≥')">≥</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('≤')">≤</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('≠')">≠</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('√')">√</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('π')">π</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('÷')">÷</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('×')">×</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('°')">°</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('½')">½</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('¼')">¼</button>
+            <button type="button" class="symbol-btn" onclick="insertSymbol('¾')">¾</button>
+        </div>
+
+        <p class="text-xs text-blue-700 mt-2">
+            Click inside Question or Option field first, then click any symbol.
+        </p>
+    </div>
+
+    <div class="mb-6 bg-purple-50 border border-purple-200 rounded-2xl p-4">
+        <p class="font-semibold text-purple-800 mb-2">Advanced Math Input</p>
+
+        <p class="text-sm text-purple-700">
+            You can type math expressions using LaTeX format:
+        </p>
+
+        <ul class="text-sm mt-2 space-y-1 text-purple-700">
+            <li><b>x²</b> → type: <code>\(x^2\)</code></li>
+            <li><b>x¹²</b> → type: <code>\(x^{12}\)</code></li>
+            <li><b>x⁽ⁿ⁺¹⁾</b> → type: <code>\(x^{(n+1)}\)</code></li>
+            <li><b>log₂(8)</b> → type: <code>\(\log_{2}(8)\)</code></li>
+            <li><b>∑x²</b> → type: <code>\(\sum x^2\)</code></li>
+        </ul>
+    </div>
+
+    <div class="mb-6 bg-purple-50 border border-purple-200 rounded-2xl p-4">
+        <p class="font-semibold text-purple-800 mb-3">JAMB-Level Math Editor</p>
+
+        <div class="flex flex-wrap gap-2">
+            <button type="button" class="symbol-btn" onclick="insertMath('\\(x^{2}\\)')">x²</button>
+            <button type="button" class="symbol-btn" onclick="insertMath('\\(x^{12}\\)')">x¹²</button>
+            <button type="button" class="symbol-btn" onclick="insertMath('\\(x^{(n+1)}\\)')">x⁽ⁿ⁺¹⁾</button>
+            <button type="button" class="symbol-btn" onclick="insertMath('\\(\\frac{a}{b}\\)')">a/b</button>
+            <button type="button" class="symbol-btn" onclick="insertMath('\\(\\sqrt{x}\\)')">√x</button>
+            <button type="button" class="symbol-btn" onclick="insertMath('\\(\\log_{2}(8)\\)')">log₂(8)</button>
+            <button type="button" class="symbol-btn" onclick="insertMath('\\(\\sum x^{2}\\)')">∑x²</button>
+            <button type="button" class="symbol-btn" onclick="insertMath('\\(x \\ge 5\\)')">≥</button>
+            <button type="button" class="symbol-btn" onclick="insertMath('\\(x \\le 5\\)')">≤</button>
+            <button type="button" class="symbol-btn" onclick="insertMath('\\(x \\ne 5\\)')">≠</button>
+            <button type="button" class="symbol-btn" onclick="insertMath('\\(\\pi\\)')">π</button>
+            <button type="button" class="symbol-btn" onclick="insertMath('\\(\\theta\\)')">θ</button>
+        </div>
+
+        <p class="text-xs text-purple-700 mt-3">
+            Click inside Question or Option field first, then click a math button.
+        </p>
+    </div>
+
+    <div class="mb-6 bg-white border border-slate-200 rounded-2xl p-4">
+        <p class="font-semibold text-slate-800 mb-2">Live Math Preview</p>
+        <div id="mathPreview" class="min-h-[60px] p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800">
+            Click inside a field and start typing...
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 gap-6">
+        {% csrf_token %}
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Question</label>
+            {{ form.question_text }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Question Image / Diagram (Optional)</label>
+            {{ form.question_image }}
+            <p class="text-xs text-slate-500 mt-1">
+                Upload diagrams, graphs, maps, geometry shapes, or other question images.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium mb-2">Option A</label>
+                {{ form.option_a }}
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Option B</label>
+                {{ form.option_b }}
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Option C</label>
+                {{ form.option_c }}
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Option D</label>
+                {{ form.option_d }}
+            </div>
+        </div>
+
+        <div class="max-w-xs">
+            <label class="block text-sm font-medium mb-2">Correct Option</label>
+            {{ form.correct_option }}
+        </div>
+
+        <div>
+            <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                Save Question
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let activeInput = null;
+
+    document.addEventListener("focusin", function(event) {
+        if (event.target.tagName === "TEXTAREA" || event.target.tagName === "INPUT") {
+            activeInput = event.target;
+            updateMathPreview();
+        }
+    });
+
+    document.addEventListener("input", function(event) {
+        if (event.target === activeInput) {
+            updateMathPreview();
+        }
+    });
+
+    function insertSymbol(symbol) {
+        if (!activeInput) {
+            alert("Click inside a question or option field first.");
+            return;
+        }
+
+        const start = activeInput.selectionStart || 0;
+        const end = activeInput.selectionEnd || 0;
+        const value = activeInput.value;
+
+        activeInput.value = value.substring(0, start) + symbol + value.substring(end);
+        activeInput.focus();
+        activeInput.selectionStart = activeInput.selectionEnd = start + symbol.length;
+
+        updateMathPreview();
+    }
+
+    function insertMath(value) {
+        if (!activeInput) {
+            alert("Click inside a question or option field first.");
+            return;
+        }
+
+        const start = activeInput.selectionStart || 0;
+        const end = activeInput.selectionEnd || 0;
+        const text = activeInput.value;
+
+        activeInput.value = text.substring(0, start) + value + text.substring(end);
+        activeInput.focus();
+        activeInput.selectionStart = activeInput.selectionEnd = start + value.length;
+
+        updateMathPreview();
+    }
+
+    function updateMathPreview() {
+        const preview = document.getElementById("mathPreview");
+
+        if (!activeInput || !preview) return;
+
+        preview.innerHTML = activeInput.value || "Nothing to preview yet.";
+
+        if (window.MathJax) {
+            MathJax.typesetPromise([preview]);
+        }
+    }
+</script>
+{% endblock %}

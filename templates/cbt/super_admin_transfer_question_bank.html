@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Transfer CBT Questions</h1>
+        <p class="text-slate-500 mt-1">
+            Copy question bank questions from one school to another.
+        </p>
+    </div>
+
+    <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-2xl p-4">
+        First select source and destination schools, then click Load Classes & Subjects.
+    </div>
+
+    <form method="get" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+            <label class="block text-sm font-semibold mb-1">Source School</label>
+            <select name="source_school" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                <option value="">Select Source School</option>
+                {% for school in schools %}
+                    <option value="{{ school.id }}" {% if source_school_id|stringformat:"s" == school.id|stringformat:"s" %}selected{% endif %}>
+                        {{ school.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-1">Destination School</label>
+            <select name="destination_school" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                <option value="">Select Destination School</option>
+                {% for school in schools %}
+                    <option value="{{ school.id }}" {% if destination_school_id|stringformat:"s" == school.id|stringformat:"s" %}selected{% endif %}>
+                        {{ school.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="md:col-span-2 flex justify-end">
+            <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                Load Classes & Subjects
+            </button>
+        </div>
+    </form>
+
+    <form method="post" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+        {% csrf_token %}
+
+        <input type="hidden" name="source_school" value="{{ source_school_id }}">
+        <input type="hidden" name="destination_school" value="{{ destination_school_id }}">
+
+        <div>
+            <label class="block text-sm font-semibold mb-1">Source Class</label>
+            <select name="source_class" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                <option value="">Select Source Class</option>
+                {% for class in source_classes %}
+                    <option value="{{ class.id }}">{{ class.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-1">Source Subject</label>
+            <select name="source_subject" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                <option value="">Select Source Subject</option>
+                {% for subject in source_subjects %}
+                    <option value="{{ subject.id }}">{{ subject.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-1">Destination Class</label>
+            <select name="destination_class" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                <option value="">Select Destination Class</option>
+                {% for class in destination_classes %}
+                    <option value="{{ class.id }}">{{ class.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-1">Destination Subject</label>
+            <select name="destination_subject" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                <option value="">Select Destination Subject</option>
+                {% for subject in destination_subjects %}
+                    <option value="{{ subject.id }}">{{ subject.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="md:col-span-2 flex justify-end">
+            <button type="submit" onclick="return confirm('Copy these CBT questions to the destination school?')" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold">
+                Transfer Questions
+            </button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

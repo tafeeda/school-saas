@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bulk Class Result Print</title>
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .single-result-frame {
+                page-break-after: always;
+                break-after: page;
+            }
+
+            .single-result-frame:last-child {
+                page-break-after: auto;
+                break-after: auto;
+            }
+
+            iframe {
+                height: 100vh !important;
+            }
+        }
+
+        body {
+            margin: 0;
+            background: #e2e8f0;
+        }
+
+        .topbar {
+            padding: 15px 30px;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            border-bottom: 1px solid #cbd5e1;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar h1 {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .topbar p {
+            margin: 4px 0 0;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-print {
+            background: #2563eb;
+        }
+
+        .btn-back {
+            background: #334155;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .single-result-frame {
+            width: 100%;
+            height: 1120px;
+            border: none;
+            display: block;
+            margin: 0 auto 30px auto;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar no-print">
+        <div>
+            <h1>Bulk Class Result Print</h1>
+            <p>{{ school_class.name }} | {{ session.name }} | {{ term.get_name_display }}</p>
+        </div>
+
+        <div>
+            <a href="{% url 'bulk_class_result_print_select' %}" class="btn btn-back">Back</a>
+            <button onclick="window.print()" class="btn btn-print">Print All</button>
+        </div>
+    </div>
+
+    {% if sheets %}
+        {% for sheet in sheets %}
+            <iframe
+                class="single-result-frame"
+                src="{% url 'public_result_view' sheet.pk %}">
+            </iframe>
+        {% endfor %}
+    {% else %}
+        <div style="font-family: Arial; padding: 40px; text-align: center;">
+            No published and unblocked result sheets found.
+        </div>
+    {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Payment Successful" page_subtitle="Subscription activated successfully" %}
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-3xl">
+    <p class="text-slate-700">
+        Your online payment was successful and your school's subscription has been activated.
+    </p>
+
+    <div class="mt-6">
+        <a href="{% url 'dashboard_redirect' %}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl">
+            Go to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

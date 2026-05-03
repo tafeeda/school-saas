@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+
+    <div class="mb-6">
+        <a href="{% url 'school_admin_list' %}" class="text-blue-600 hover:underline">← Back to School Admins</a>
+        <h1 class="text-2xl font-bold text-slate-800 mt-3">Edit School Admin</h1>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Username</label>
+                <input type="text" name="username" value="{{ school_admin.username }}" required
+                       class="w-full rounded-xl border border-slate-300 px-4 py-3">
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Email</label>
+                <input type="email" name="email" value="{{ school_admin.email }}"
+                       class="w-full rounded-xl border border-slate-300 px-4 py-3">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">First Name</label>
+                    <input type="text" name="first_name" value="{{ school_admin.first_name }}"
+                           class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Last Name</label>
+                    <input type="text" name="last_name" value="{{ school_admin.last_name }}"
+                           class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Assigned School</label>
+                <select name="school" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    {% for school in schools %}
+                        <option value="{{ school.id }}" {% if school_admin.school and school_admin.school.id == school.id %}selected{% endif %}>
+                            {{ school.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4">
+                <a href="{% url 'school_admin_list' %}" class="px-5 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100">
+                    Cancel
+                </a>
+
+                <button type="submit" class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

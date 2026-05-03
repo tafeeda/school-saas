@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="CBT Analytics" page_subtitle="Monitor exam performance and student attempts" %}
+
+<div class="space-y-6">
+
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Total Attempts</p>
+            <h3 class="text-3xl font-bold mt-2">{{ total_attempts }}</h3>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Average Score</p>
+            <h3 class="text-3xl font-bold mt-2">{{ average_score }}</h3>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Highest Score</p>
+            <h3 class="text-3xl font-bold mt-2">{{ highest_score }}</h3>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Lowest Score</p>
+            <h3 class="text-3xl font-bold mt-2">{{ lowest_score }}</h3>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Pass Rate</p>
+            <h3 class="text-3xl font-bold mt-2">{{ pass_rate }}%</h3>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <h4 class="text-xl font-semibold mb-4">Exam Performance</h4>
+
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Exam</th>
+                    <th class="py-3">Class</th>
+                    <th class="py-3">Subject</th>
+                    <th class="py-3">Attempts</th>
+                    <th class="py-3">Average</th>
+                    <th class="py-3">Highest</th>
+                    <th class="py-3">Lowest</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exam_stats %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3 font-medium">{{ exam.title }}</td>
+                    <td class="py-3">{{ exam.school_class.name }}</td>
+                    <td class="py-3">{{ exam.subject.name }}</td>
+                    <td class="py-3">{{ exam.attempt_count }}</td>
+                    <td class="py-3">{{ exam.average_score|default:"0" }}</td>
+                    <td class="py-3">{{ exam.highest_score|default:"0" }}</td>
+                    <td class="py-3">{{ exam.lowest_score|default:"0" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="py-4 text-slate-500">No CBT exams available yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <h4 class="text-xl font-semibold mb-4">Top Student Attempts</h4>
+
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Student</th>
+                    <th class="py-3">Exam</th>
+                    <th class="py-3">Score</th>
+                    <th class="py-3">Total</th>
+                    <th class="py-3">Submitted At</th>
+                    <th class="py-3">Auto Submitted</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in top_attempts %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3 font-medium">{{ attempt.student.full_name }}</td>
+                    <td class="py-3">{{ attempt.exam.title }}</td>
+                    <td class="py-3">{{ attempt.score }}</td>
+                    <td class="py-3">{{ attempt.total }}</td>
+                    <td class="py-3">{{ attempt.submitted_at }}</td>
+                    <td class="py-3">
+                        {% if attempt.was_auto_submitted %}
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm">Yes</span>
+                        {% else %}
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">No</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-4 text-slate-500">No submitted attempts yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

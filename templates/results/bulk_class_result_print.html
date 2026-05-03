@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bulk Class Result Print</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 8mm;
+        }
+
+        body {
+            background: #f1f5f9;
+            font-size: 10px;
+        }
+
+        .result-page {
+            page-break-after: always;
+            break-after: page;
+        }
+
+        .result-page:last-child {
+            page-break-after: auto;
+            break-after: auto;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white !important;
+            }
+
+            .result-page {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+            }
+        }
+
+        .small-text {
+            font-size: 9px;
+            line-height: 1.05;
+        }
+
+        table th,
+        table td {
+            padding: 1px 3px !important;
+            vertical-align: top;
+        }
+
+        .watermark-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .watermark-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 120px;
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .watermark-content {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body class="py-6">
+
+    <div class="no-print max-w-6xl mx-auto px-4 mb-5 flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold text-slate-800">Bulk Class Result Print</h1>
+            <p class="text-slate-500">
+                {{ school_class.name }} | {{ session.name }} | {{ term.get_name_display }}
+            </p>
+        </div>
+
+        <div class="flex gap-2">
+            <a href="{% url 'bulk_class_result_print_select' %}" class="bg-slate-700 hover:bg-slate-800 text-white px-5 py-2 rounded-xl">
+                Back
+            </a>
+
+            <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl">
+                Print All
+            </button>
+        </div>
+    </div>
+
+    {% if sheets %}
+        {% for sheet in sheets %}
+            <div class="result-page max-w-6xl mx-auto bg-white rounded-3xl shadow-lg border border-slate-200 watermark-container mb-8"
+                 style="{% if sheet.school.logo %}--logo-url: url('{{ sheet.school.logo.url }}');{% endif %}">
+
+                <style>
+                    .result-page:nth-of-type({{ forloop.counter|add:1 }})::before {
+                        {% if sheet.school.logo %}
+                        background-image: url('{{ sheet.school.logo.url }}');
+                        {% endif %}
+                    }
+                </style>
+
+                <div class="watermark-content p-5 space-y-5">
+
+                    <div class="text-center border-b border-slate-300 pb-3">
+                        <div class="flex items-center justify-center gap-3 mb-2">
+                            {% if sheet.school.logo %}
+                                <img src="{{ sheet.school.logo.url }}" alt="{{ sheet.school.name }}" class="w-14 h-14 object-cover rounded-lg border border-slate-200">
+                            {% endif %}
+
+                            <div>
+                                <h1 class="text-xl font-bold uppercase">{{ sheet.school.name }}</h1>
+                                <p class="small-text">{{ sheet.school.address|default:"" }}</p>
+                                <p class="small-text">
+                                    {% if sheet.school.phone %}{{ sheet.school.phone }}{% endif %}
+                                    {% if sheet.school.phone and sheet.school.email %} | {% endif %}
+                                    {% if sheet.school.email %}{{ sheet.school.email }}{% endif %}
+                                </p>
+                            </div>
+                        </div>
+
+                        <h2 class="text-sm font-semibold uppercase">Academic Result</h2>
+                        <p class="small-text mt-1">
+                            Verification Code:
+                            <span class="font-semibold">{{ sheet.verification_code|default:"-" }}</span>
+                        </p>
+                    </div>
+
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-3">
+                            <div>
+                                {% if sheet.school.logo %}
+                                    <img src="{{ sheet.school.logo.url }}" alt="{{ sheet.school.name }}" class="w-16 h-16 object-cover rounded-xl border border-slate-200">
+                                {% else %}
+                                    <div class="w-16 h-16 bg-slate-200 rounded-xl"></div>
+                                {% endif %}
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-x-5 gap-y-1 small-text">
+                                <p><span class="font-semibold">Student Name:</span> {{ sheet.student.full_name }}</p>
+                                <p><span class="font-semibold">Admission No:</span> {{ sheet.student.admission_number }}</p>
+
+                                <p><span class="font-semibold">Class:</span> {{ sheet.school_class.name }}</p>
+                                <p><span class="font-semibold">Session:</span> {{ sheet.session.name }}</p>
+
+                                <p><span class="font-semibold">Term:</span> {{ sheet.term.get_name_display }}</p>
+                                <p><span class="font-semibold">Attendance:</span> {{ sheet.attendance_present }}/{{ sheet.attendance_total }}</p>
+
+                                <p><span class="font-semibold">Next Resumption:</span> {{ sheet.next_resumption_date|default:"-" }}</p>
+                                <p><span class="font-semibold">Position:</span>
+                                    {% if sheet.class_position and sheet.class_size %}
+                                        {{ sheet.class_position }}/{{ sheet.class_size }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div>
+                            {% if sheet.student.passport %}
+                                <img src="{{ sheet.student.passport.url }}" alt="{{ sheet.student.full_name }}" class="w-20 h-24 object-cover rounded-xl border border-slate-300">
+                            {% else %}
+                                <div class="w-20 h-24 bg-slate-200 rounded-xl border border-slate-300"></div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-6 gap-2 small-text">
+                        <div class="border border-slate-300 rounded-xl p-3 bg-slate-50">
+                            <b>Total:</b><br>{{ sheet.total_obtained }}
+                        </div>
+                        <div class="border border-slate-300 rounded-xl p-3 bg-slate-50">
+                            <b>Possible:</b><br>{{ sheet.total_possible }}
+                        </div>
+                        <div class="border border-slate-300 rounded-xl p-3 bg-slate-50">
+                            <b>Average:</b><br>{{ sheet.average_score }}
+                        </div>
+                        <div class="border border-slate-300 rounded-xl p-3 bg-slate-50">
+                            <b>%:</b><br>{{ sheet.percentage }}
+                        </div>
+                        <div class="border border-slate-300 rounded-xl p-3 bg-slate-50">
+                            <b>Grade:</b><br>{{ sheet.average_grade|default:"-" }}
+                        </div>
+                        <div class="border border-slate-300 rounded-xl p-3 bg-slate-50">
+                            <b>Class Avg:</b><br>{{ class_average_total }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-bold mb-2 uppercase tracking-wide text-slate-700">Subject Performance</h3>
+
+                        <table class="w-full border border-slate-300 small-text">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="border border-slate-300 text-left">S/N</th>
+                                    <th class="border border-slate-300 text-left">Subject</th>
+                                    <th class="border border-slate-300 text-left">CA</th>
+                                    <th class="border border-slate-300 text-left">Exam</th>
+                                    <th class="border border-slate-300 text-left">Total</th>
+                                    <th class="border border-slate-300 text-left">Grade</th>
+                                    <th class="border border-slate-300 text-left">Remark</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for item in sheet.subject_results.all %}
+                                <tr>
+                                    <td class="border border-slate-300">{{ forloop.counter }}</td>
+                                    <td class="border border-slate-300">{{ item.subject.name }}</td>
+                                    <td class="border border-slate-300">{{ item.ca_score }}</td>
+                                    <td class="border border-slate-300">{{ item.exam_score }}</td>
+                                    <td class="border border-slate-300">{{ item.total_score }}</td>
+                                    <td class="border border-slate-300">{{ item.grade|default:"-" }}</td>
+                                    <td class="border border-slate-300">{{ item.remark|default:"-" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 small-text">
+                        <div class="border border-slate-300 rounded-xl p-3">
+                            <b>Teacher's Comment:</b><br>
+                            {{ sheet.teacher_comment|default:"-" }}
+                        </div>
+
+                        <div class="border border-slate-300 rounded-xl p-3">
+                            <b>Head Teacher's Comment:</b><br>
+                            {{ sheet.headteacher_comment|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-6 pt-4 small-text">
+                        <div class="text-center border-t border-slate-400 pt-2">Class Teacher</div>
+                        <div class="text-center border-t border-slate-400 pt-2">Principal / Head Teacher</div>
+                        <div class="text-center border-t border-slate-400 pt-2">Parent / Guardian</div>
+                    </div>
+
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="max-w-4xl mx-auto bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-500">
+            No published and unblocked result sheets found for this class, session, and term.
+        </div>
+    {% endif %}
+
+</body>
+</html>

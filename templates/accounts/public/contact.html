@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Contact | EduPortal{% endblock %}
+
+{% block content %}
+<style>
+    .fade-in {
+        animation: fadeIn 0.6s ease forwards;
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hover-lift {
+        transition: all 0.25s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    }
+
+    .contact-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease, text-decoration 0.2s ease;
+    }
+
+    .contact-link:hover {
+        color: #1d4ed8;
+        text-decoration: underline;
+    }
+</style>
+
+<div class="max-w-4xl mx-auto">
+    <a href="{% url 'login' %}"
+    class="fade-in inline-flex items-center mb-5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:text-blue-700 transition">
+        ← Back to Login
+    </a>
+
+    <div class="fade-in hover-lift bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+        <h1 class="text-3xl font-bold text-slate-800 mb-6">
+            Contact Information
+        </h1>
+
+        <div class="space-y-4 text-slate-700">
+
+            <!-- Email -->
+            <div>
+                <p class="font-semibold">Email</p>
+                <a href="mailto:support@mutafsglobaltechnology.com" class="contact-link text-slate-600">
+                    ✉️ support@mutafsglobaltechnology.com
+                </a>
+                <p class="text-slate-600 my-1">OR</p>
+                <a href="mailto:umarmuhammadtafeeda@yahoo.com" class="contact-link text-slate-600">
+                    ✉️ umarmuhammadtafeeda@yahoo.com
+                </a>
+            </div>
+
+            <!-- Phone -->
+            <div>
+                <p class="font-semibold">Phone</p>
+                <a href="tel:+2348031146140" class="contact-link text-slate-600">
+                    📞 +234 803 114 6140
+                </a>
+            </div>
+
+            <!-- WhatsApp -->
+            <div>
+                <p class="font-semibold">WhatsApp</p>
+                <a href="https://wa.me/2348031146140" target="_blank" rel="noopener noreferrer" class="contact-link text-slate-600">
+                    💬 +234 803 114 6140
+                </a>
+            </div>
+
+            <!-- Location -->
+            <div>
+                <p class="font-semibold">Location</p>
+                <a href="https://www.google.com/maps/search/Nigeria" target="_blank" rel="noopener noreferrer" class="contact-link text-slate-600">
+                    📍 Abuja, Nigeria
+                </a>
+            </div>
+
+            <!-- Website -->
+            <div>
+                <p class="font-semibold">Website</p>
+                <a href="https://mutafsglobaltechnology.netlify.app/" target="_blank" rel="noopener noreferrer" class="contact-link text-slate-600">
+                    🌐 https://mutafsglobaltechnology.netlify.app
+                </a>
+            </div>
+
+            <!-- Location -->
+            <div>
+                <p class="font-semibold">Address</p>
+                <a href="https://maps.app.goo.gl/ypdpChKAEugvUwDv8" target="_blank" rel="noopener noreferrer" class="contact-link text-slate-600">
+                    📍 No. 6, Maitama Sule Street Asokoro, FCT, Nigeria
+                </a>
+            </div>
+
+            <!-- Working Hours -->
+            <div>
+                <p class="font-semibold">Working Hours</p>
+                <p class="text-slate-600">🕗 Monday – Friday (8:00 AM – 5:00 PM)</p>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

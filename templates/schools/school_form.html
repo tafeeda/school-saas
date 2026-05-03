@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">
+            {% if form_mode == "create" %}Create School{% else %}Edit School{% endif %}
+        </h3>
+        <p class="text-slate-500 mb-6">Set up a new school profile and branding.</p>
+
+        <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium mb-2">School Name</label>
+                {{ form.name }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Code</label>
+                {{ form.code }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Email</label>
+                {{ form.email }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Phone</label>
+                {{ form.phone }}
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-2">Address</label>
+                {{ form.address }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Logo</label>
+                {{ form.logo }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Portal Subpath</label>
+                {{ form.portal_subpath }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Trial End Date</label>
+                {{ form.trial_end_date }}
+            </div>
+
+            <div class="space-y-3">
+                <label class="flex items-center gap-3">
+                    {{ form.allow_result_checking }}
+                    <span>Allow result checking</span>
+                </label>
+
+                <label class="flex items-center gap-3">
+                    {{ form.is_active }}
+                    <span>School active</span>
+                </label>
+
+                <label class="flex items-center gap-3">
+                    {{ form.is_on_trial }}
+                    <span>School on trial</span>
+                </label>
+
+                <!-- CBT Toggle -->
+                <div class="flex items-center gap-3 mt-4">
+                    {{ form.enable_cbt }}
+                    <label class="text-sm font-medium">Enable CBT Module</label>
+                </div>
+                <p class="text-xs text-slate-500 ml-7">
+                    When enabled, this school can create and run CBT exams.
+                </p>
+
+                <!-- Show CBT Score Toggle -->
+                <div class="flex items-center gap-3 mt-4">
+                    {{ form.show_cbt_score_immediately }}
+                    <label class="text-sm font-medium">Show CBT Score Immediately After Submission</label>
+                </div>
+                <p class="text-xs text-slate-500 ml-7">
+                    If disabled, students will only see that their exam was submitted successfully.
+                </p>
+
+                <!-- Shuffle CBT Questions Toggle -->
+                <div class="flex items-center gap-3 mt-4">
+                    {{ form.shuffle_cbt_questions }}
+                    <label class="text-sm font-medium">Shuffle CBT Questions</label>
+                </div>
+                <p class="text-xs text-slate-500 ml-7">
+                    If enabled, each student will see CBT questions in a random order.
+                </p>
+
+                <div class="flex items-center gap-3 mt-4">
+                    {{ form.shuffle_cbt_options }}
+                    <label class="text-sm font-medium">Shuffle CBT Answer Options</label>
+                </div>
+                <p class="text-xs text-slate-500 ml-7">
+                    If enabled, each student will see answer options in a different order.
+                </p>
+
+            </div>
+
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold">
+                    Save School
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

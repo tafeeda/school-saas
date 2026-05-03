@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+
+    {% if last_login_log %}
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+        <p class="text-sm text-slate-500">Last Login</p>
+        <p class="font-semibold text-slate-800">
+            {{ last_login_log.created_at|date:"M d, Y H:i" }}
+        </p>
+        <p class="text-sm text-slate-500">
+            IP Address: {{ last_login_log.ip_address|default:"-" }}
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- 🔥 MAIN STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Total Schools</p>
+            <h3 class="text-3xl font-bold mt-2">{{ total_schools }}</h3>
+        </div>
+
+        <!-- ✅ NEW CARD -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Super Admins</p>
+            <h3 class="text-3xl font-bold mt-2">{{ total_super_admins }}</h3>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Active Schools</p>
+            <h3 class="text-3xl font-bold mt-2">{{ active_schools }}</h3>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Inactive Schools</p>
+            <h3 class="text-3xl font-bold mt-2">{{ inactive_schools }}</h3>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Trial Schools</p>
+            <h3 class="text-3xl font-bold mt-2">{{ trial_schools }}</h3>
+        </div>
+
+    </div>
+
+    <!-- 🔥 SECOND ROW -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <p class="text-slate-500">Total Students</p>
+            <h3 class="text-3xl font-bold">{{ total_students }}</h3>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <p class="text-slate-500">Total Teachers</p>
+            <h3 class="text-3xl font-bold">{{ total_teachers }}</h3>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <p class="text-slate-500">Total Classes</p>
+            <h3 class="text-3xl font-bold">{{ total_classes }}</h3>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <p class="text-slate-500">Lesson Notes</p>
+            <h3 class="text-3xl font-bold">{{ total_lesson_notes }}</h3>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <p class="text-slate-500">Published Results</p>
+            <h3 class="text-3xl font-bold">{{ total_published_results }}</h3>
+        </div>
+
+        </div>
+
+        <!-- ⚡ SUPER ADMIN QUICK ACTIONS -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <!-- Existing -->
+            <a href="{% url 'super_admin_transfer_question_bank' %}"
+            class="block bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition">
+                <h4 class="text-xl font-semibold">Transfer CBT Questions</h4>
+                <p class="text-slate-500 mt-2">
+                    Copy CBT question bank questions from one school to another.
+                </p>
+            </a>
+
+            <!-- 🔥 NEW ONE (ADD THIS) -->
+            <a href="{% url 'super_admin_cbt_question_manager' %}"
+            class="block bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition">
+                <h4 class="text-xl font-semibold">CBT Question Manager</h4>
+                <p class="text-slate-500 mt-2">
+                    View exam questions and transfer between CBT exams and question bank.
+                </p>
+            </a>
+
+            <a href="{% url 'super_admin_school_cbt_overview' %}"
+               class="block bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition">
+                <h4 class="text-xl font-semibold">Schools & CBT Records</h4>
+                <p class="text-slate-500 mt-2">
+                    View all schools, students, and how many times each student wrote CBT exams.
+                </p>
+            </a>
+
+        </div>
+
+    <!-- 🔥 RECENT SCHOOLS -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold">Recent Schools</h3>
+            <a href="{% url 'school_create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+                Create School
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b border-slate-200">
+                        <th class="py-3">School</th>
+                        <th class="py-3">Code</th>
+                        <th class="py-3">Portal</th>
+                        <th class="py-3">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for school in recent_schools %}
+                    <tr class="border-b border-slate-100">
+                        <td class="py-3">{{ school.name }}</td>
+                        <td class="py-3">{{ school.code }}</td>
+                        <td class="py-3">{{ school.portal_subpath }}</td>
+                        <td class="py-3">
+                            {% if school.is_active %}
+                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">Active</span>
+                            {% else %}
+                                <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm">Inactive</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="py-4 text-slate-500">No schools available yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 🔥 CHARTS -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h4 class="text-xl font-semibold mb-4">Students Per School</h4>
+            <div class="h-72">
+                <canvas id="studentsPerSchoolChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h4 class="text-xl font-semibold mb-4">School Status Overview</h4>
+            <div class="h-72">
+                <canvas id="schoolStatusChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 🔥 TOP SCHOOLS -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h4 class="text-xl font-semibold mb-4">Top Performing Schools</h4>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b border-slate-200">
+                        <th class="py-3">Rank</th>
+                        <th class="py-3">School</th>
+                        <th class="py-3">Published Results</th>
+                        <th class="py-3">Average Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for school in top_schools %}
+                    <tr class="border-b border-slate-100">
+                        <td class="py-3 font-bold">
+                            {% if forloop.counter == 1 %}🥇
+                            {% elif forloop.counter == 2 %}🥈
+                            {% elif forloop.counter == 3 %}🥉
+                            {% else %}#{{ forloop.counter }}
+                            {% endif %}
+                        </td>
+                        <td class="py-3 font-medium">{{ school.name }}</td>
+                        <td class="py-3">{{ school.published_count }}</td>
+                        <td class="py-3">
+                            <div class="w-full bg-slate-100 rounded-full h-2 mb-1">
+                                <div class="bg-blue-600 h-2 rounded-full"
+                                     style="width: {{ school.avg_score|default:0|floatformat:0 }}%;">
+                                </div>
+                            </div>
+                            <span class="text-sm font-semibold">
+                                {{ school.avg_score|floatformat:2 }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="py-4 text-slate-500">
+                            No published school results available yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- 🔥 CHART JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const schoolLabels = JSON.parse('{{ school_labels|safe|escapejs }}');
+    const schoolCounts = JSON.parse('{{ school_counts|safe|escapejs }}');
+
+    const schoolStatusData = [
+        Number('{{ active_schools|default:0 }}'),
+        Number('{{ inactive_schools|default:0 }}'),
+        Number('{{ trial_schools|default:0 }}')
+    ];
+
+    new Chart(document.getElementById('studentsPerSchoolChart'), {
+        type: 'bar',
+        data: {
+            labels: schoolLabels,
+            datasets: [{
+                label: 'Students',
+                data: schoolCounts,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('schoolStatusChart'), {
+        type: 'pie',
+        data: {
+            labels: ['Active', 'Inactive', 'Trial'],
+            datasets: [{
+                data: schoolStatusData
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Question Bank" page_subtitle="Reusable CBT questions for your school" %}
+
+<div class="space-y-6">
+
+    <div class="flex justify-end">
+        <a href="{% url 'question_bank_create' %}"
+           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+            Add Question
+        </a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Question</th>
+                    <th class="py-3">Class</th>
+                    <th class="py-3">Subject</th>
+                    <th class="py-3">Difficulty</th>
+                    <th class="py-3">Correct</th>
+                    <th class="py-3">Status</th>
+                    <th class="py-3">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for question in questions %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3 max-w-md">
+                        <p class="font-medium math-content">{{ question.question_text|safe|truncatechars:90 }}</p>
+
+                        {% if question.question_image %}
+                            <img src="{{ question.question_image.url }}"
+                                 class="mt-2 w-20 h-20 object-cover rounded-lg border">
+                        {% endif %}
+                    </td>
+
+                    <td class="py-3">{{ question.school_class.name }}</td>
+                    <td class="py-3">{{ question.subject.name }}</td>
+                    <td class="py-3">{{ question.get_difficulty_display }}</td>
+                    <td class="py-3 font-semibold">{{ question.correct_option }}</td>
+
+                    <td class="py-3">
+                        {% if question.is_active %}
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">Active</span>
+                        {% else %}
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm">Inactive</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="py-3 flex gap-3">
+                        <a href="{% url 'question_bank_update' question.id %}"
+                           class="text-blue-600 hover:underline">
+                            Edit
+                        </a>
+
+                        <a href="{% url 'question_bank_delete' question.id %}"
+                           class="text-red-600 hover:underline">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="py-4 text-slate-500">
+                        No question bank questions created yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

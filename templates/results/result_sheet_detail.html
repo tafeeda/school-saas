@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Result Sheet Detail" page_subtitle=sheet.student.full_name %}
+<div class="space-y-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div>
+                <p class="text-slate-500">
+                    {{ sheet.school_class.name }} | {{ sheet.session.name }} | {{ sheet.term.get_name_display }}
+                </p>
+                <p class="text-slate-500 mt-1">
+                    Position:
+                    {% if sheet.class_position and sheet.class_size %}
+                        {{ sheet.class_position }} / {{ sheet.class_size }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <a href="{% url 'result_sheet_print' sheet.pk %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl">
+                    Print Result
+                </a>
+
+                <a href="{% url 'regenerate_passkey' sheet.pk %}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl">
+                    Regenerate Passkey
+                </a>
+
+
+                <a href="{% url 'toggle_passkey' sheet.pk %}" class="bg-yellow-500 text-white px-4 py-2 rounded-xl">
+                    {% if sheet.access_token.is_active %}
+                        Disable Passkey
+                    {% else %}
+                        Enable Passkey
+                    {% endif %}
+                </a>
+
+                <a href="{% url 'toggle_result_block' sheet.pk %}" class="bg-orange-600 text-white px-4 py-2 rounded-xl">
+                    {% if sheet.is_result_blocked %}
+                        Unblock Result
+                    {% else %}
+                        Block Result
+                    {% endif %}
+                </a>
+
+                {% if request.user.role == "SUPER_ADMIN" or request.user.role == "SCHOOL_ADMIN" %}
+                    <a href="{% url 'result_sheet_print' sheet.pk %}"
+                    target="_blank"
+                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl">
+                        Download PDF
+                    </a>
+                {% endif %}
+
+                <a href="{% url 'result_sheet_recalculate' sheet.pk %}" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl">
+                    Recalculate
+                </a>
+
+                <a href="{% url 'result_sheet_generate_comments' sheet.pk %}" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl">
+                    Generate Comments
+                </a>
+
+                {% if not sheet.is_published %}
+                    <a href="{% url 'result_sheet_publish' sheet.pk %}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl">
+                        Publish
+                    </a>
+                {% else %}
+                    <a href="{% url 'result_sheet_unpublish' sheet.pk %}" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-xl">
+                        Unpublish
+                    </a>
+                {% endif %}
+
+                <a href="{% url 'result_sheet_update' sheet.pk %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+                    Edit
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mt-6">
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Total Obtained</p>
+                <p class="font-semibold">{{ sheet.total_obtained }}</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Total Possible</p>
+                <p class="font-semibold">{{ sheet.total_possible }}</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Percentage</p>
+                <p class="font-semibold">{{ sheet.percentage }}%</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Average Score</p>
+                <p class="font-semibold">{{ sheet.average_score }}</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Average Grade</p>
+                <p class="font-semibold">{{ sheet.average_grade|default:"-" }}</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Attendance</p>
+                <p class="font-semibold">{{ sheet.attendance_present }}/{{ sheet.attendance_total }}</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Class Highest Total</p>
+                <p class="font-semibold">{{ class_highest_total }}</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Class Average Total</p>
+                <p class="font-semibold">{{ class_average_total }}</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Class Lowest Total</p>
+                <p class="font-semibold">{{ class_lowest_total }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <div class="flex items-center justify-between mb-4">
+            <h4 class="text-xl font-semibold">Subject Results</h4>
+            {% if request.user.role == "TEACHER" %}
+                <a href="{% url 'teacher_subject_result_create' sheet.id %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+                    Add Subject Score
+                </a>
+            {% endif %}
+        </div>
+
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Subject</th>
+                    <th class="py-3">CA</th>
+                    <th class="py-3">Exam</th>
+                    <th class="py-3">Total</th>
+                    <th class="py-3">Highest</th>
+                    <th class="py-3">Average</th>
+                    <th class="py-3">Lowest</th>
+                    <th class="py-3">Grade</th>
+                    <th class="py-3">Remark</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in sheet.subject_results.all %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3 font-medium">{{ item.subject.name }}</td>
+                    <td class="py-3">{{ item.ca_score }}</td>
+                    <td class="py-3">{{ item.exam_score }}</td>
+                    <td class="py-3">{{ item.total_score }}</td>
+                    <td class="py-3">{{ item.class_highest }}</td>
+                    <td class="py-3">{{ item.class_average }}</td>
+                    <td class="py-3">{{ item.class_lowest }}</td>
+                    <td class="py-3">{{ item.grade|default:"-" }}</td>
+                    <td class="py-3">{{ item.remark|default:"-" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="py-4 text-slate-500">No subject results added yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h4 class="text-xl font-semibold">Behavior / Skills</h4>
+            <div class="flex gap-3">
+                <a href="{% url 'behavior_rating_bulk_create' sheet.pk %}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl">
+                    Bulk Add Ratings
+                </a>
+
+                <a href="{% url 'behavior_rating_create' sheet.pk %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+                    Add Rating
+                </a>
+            </div>
+        </div>
+
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Category</th>
+                    <th class="py-3">Trait</th>
+                    <th class="py-3">Score</th>
+                    <th class="py-3">Remark</th>
+                    <th class="py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in sheet.behavior_ratings.all %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3">{{ item.get_category_display }}</td>
+                    <td class="py-3 font-medium">{{ item.get_trait_name_display }}</td>
+                    <td class="py-3">{{ item.score }}</td>
+                    <td class="py-3">{{ item.remark|default:"-" }}</td>
+                    <td class="py-3 flex gap-3">
+                        <a href="{% url 'behavior_rating_update' item.pk %}" class="text-blue-600 hover:underline">Edit</a>
+                        <a href="{% url 'behavior_rating_delete' item.pk %}" class="text-red-600 hover:underline">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="py-4 text-slate-500">No behavior ratings added yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h4 class="text-xl font-semibold mb-3">Teacher Comment</h4>
+            <p>{{ sheet.teacher_comment|default:"No comment yet." }}</p>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h4 class="text-xl font-semibold mb-3">Head Teacher Comment</h4>
+            <p>{{ sheet.headteacher_comment|default:"No comment yet." }}</p>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h4 class="text-xl font-semibold mb-3">Next Resumption Date</h4>
+            <p>{{ sheet.next_resumption_date|default:"-" }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

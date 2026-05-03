@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title=exam.title page_subtitle="CBT Questions" %}
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <div class="text-slate-500">
+            {{ exam.school_class.name }} | {{ exam.subject.name }} | {{ exam.duration_minutes }} mins
+        </div>
+        <a href="{% url 'cbt_bulk_upload_questions' exam.id %}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl">
+            Bulk Upload
+        </a>
+        <a href="{% url 'cbt_add_from_bank' exam.id %}"
+        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl">
+            Add From Bank
+        </a>
+        <a href="{% url 'cbt_question_create' exam.id %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+            Add Question
+        </a>
+        
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Question</th>
+                    <th class="py-3">A</th>
+                    <th class="py-3">B</th>
+                    <th class="py-3">C</th>
+                    <th class="py-3">D</th>
+                    <th class="py-3">Correct</th>
+                    <th class="py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for question in questions %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3">
+                        <div>
+                            <p class="math-content">{{ question.question_text|safe }}</p>
+
+                            {% if question.question_image %}
+                                <img src="{{ question.question_image.url }}" class="mt-2 w-24 h-24 object-cover rounded-lg border">
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="py-3 math-content">{{ question.option_a|safe }}</td>
+                    <td class="py-3 math-content">{{ question.option_b|safe }}</td>
+                    <td class="py-3 math-content">{{ question.option_c|safe }}</td>
+                    <td class="py-3 math-content">{{ question.option_d|safe }}</td>
+                    <td class="py-3 font-semibold">{{ question.correct_option }}</td>
+                    <td class="py-3 flex gap-3">
+                        <a href="{% url 'cbt_question_update' question.id %}" class="text-blue-600 hover:underline">Edit</a>
+                        <a href="{% url 'cbt_question_delete' question.id %}" class="text-red-600 hover:underline">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="py-4 text-slate-500">No questions added yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title=school_class.name page_subtitle="Students in this assigned class" %}
+
+<div class="mb-4">
+    <a href="{% url 'teacher_assigned_class_list' %}" class="bg-slate-100 px-4 py-2 rounded-xl inline-block">
+        ← Back to My Classes
+    </a>
+</div>
+
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+    <table class="w-full text-left">
+        <thead>
+            <tr class="border-b border-slate-200">
+                <th class="py-3">Student</th>
+                <th class="py-3">Admission No</th>
+                <th class="py-3">Username</th>
+                <th class="py-3">Session</th>
+                <th class="py-3">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr class="border-b border-slate-100">
+                <td class="py-3 font-semibold">{{ student.full_name }}</td>
+                <td class="py-3">{{ student.admission_number }}</td>
+                <td class="py-3">
+                    {% if student.user %}
+                        {{ student.user.username }}
+                    {% else %}
+                        <span class="text-red-600">No login</span>
+                    {% endif %}
+                </td>
+                <td class="py-3">{{ student.current_session.name|default:"-" }}</td>
+                <td class="py-3">
+                    {% if student.is_active %}
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">Active</span>
+                    {% else %}
+                        <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm">Inactive</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="py-4 text-slate-500">No students found in this class.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Create Student</h3>
+        <p class="text-slate-500 mb-6">Register a new student and capture full biodata.</p>
+
+        <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <div class="md:col-span-2 rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3">
+                    <strong>Please fix the errors below:</strong>
+                    <ul class="mt-2 list-disc list-inside">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Admission Number</label>
+                {{ form.admission_number }}
+                <p class="text-red-500 text-sm mt-1">{{ form.admission_number.errors }}</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Surname</label>
+                {{ form.surname }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">First Name</label>
+                {{ form.first_name }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Other Name</label>
+                {{ form.other_name }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Gender</label>
+                {{ form.gender }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Date of Birth</label>
+                {{ form.date_of_birth }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Passport</label>
+                {{ form.passport }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Current Class</label>
+                {{ form.current_class }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Current Session</label>
+                {{ form.current_session }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Date Admitted</label>
+                {{ form.date_admitted }}
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-2">Address</label>
+                {{ form.address }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Guardian Name</label>
+                {{ form.guardian_name }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Guardian Phone</label>
+                {{ form.guardian_phone }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Guardian Email</label>
+                {{ form.guardian_email }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Relationship</label>
+                {{ form.guardian_relationship }}
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-2">Guardian Address</label>
+                {{ form.guardian_address }}
+            </div>
+
+            <div class="md:col-span-2">
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 mt-6">
+                    <h3 class="text-lg font-semibold mb-4">Login Details (Optional)</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            {{ form.username }}
+                            <p class="text-red-500 text-sm mt-1">{{ form.username.errors }}</p>
+                        </div>
+                        <div>
+                            {{ form.password }}
+                            <p class="text-red-500 text-sm mt-1">{{ form.password.errors }}</p>
+                        </div>
+                        <div>
+                            {{ form.confirm_password }}
+                            <p class="text-red-500 text-sm mt-1">{{ form.confirm_password.errors }}</p>
+                        </div>
+                    </div>
+
+                    <p class="text-sm text-slate-500 mt-2">
+                        Provide login details if the student should access the portal.
+                    </p>
+                </div>
+            </div>
+
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                    Save Student
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

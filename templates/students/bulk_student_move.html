@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Bulk Student Movement</h3>
+        <p class="text-slate-500 mb-6">
+            Select a class, choose students, and move them to another class.
+        </p>
+
+        <form method="get" class="mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Current Class</label>
+                    <select name="class_id" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                        <option value="">Select Class</option>
+                        {% for c in classes %}
+                            <option value="{{ c.id }}" {% if selected_class_id == c.id|stringformat:"s" %}selected{% endif %}>
+                                {{ c.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="md:col-span-2 flex items-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold">
+                        Load Students
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        {% if students %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="class_id" value="{{ selected_class_id }}">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-sm font-medium mb-2">New Class</label>
+                    <select name="new_class" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                        <option value="">Select New Class</option>
+                        {% for c in classes %}
+                            <option value="{{ c.id }}">{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-2">Movement Type</label>
+                    <select name="movement_type" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                        <option value="">Select Type</option>
+                        <option value="PROMOTION">Promotion</option>
+                        <option value="DEMOTION">Demotion</option>
+                        <option value="TRANSFER">Transfer</option>
+                        <option value="CORRECTION">Correction</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-2">Movement Date</label>
+                    <input type="date" name="movement_date" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-2">Reason</label>
+                    <textarea name="reason" rows="3" class="w-full rounded-xl border border-slate-300 px-4 py-3"></textarea>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4 mb-6">
+                <label class="flex items-center gap-3 font-medium">
+                    <input type="checkbox" id="select-all">
+                    Select All Students
+                </label>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-100">
+                        <tr>
+                            <th class="py-3 px-4">Select</th>
+                            <th class="py-3 px-4">Admission No</th>
+                            <th class="py-3 px-4">Name</th>
+                            <th class="py-3 px-4">Current Class</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr class="border-t border-slate-100">
+                            <td class="py-3 px-4">
+                                <input type="checkbox" name="student_ids" value="{{ student.id }}" class="student-checkbox">
+                            </td>
+                            <td class="py-3 px-4">{{ student.admission_number }}</td>
+                            <td class="py-3 px-4">{{ student.full_name }}</td>
+                            <td class="py-3 px-4">{{ student.current_class.name|default:"-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6">
+                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                    Save Bulk Movement
+                </button>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    const selectAll = document.getElementById("select-all");
+    if (selectAll) {
+        selectAll.addEventListener("change", function () {
+            document.querySelectorAll(".student-checkbox").forEach(cb => {
+                cb.checked = this.checked;
+            });
+        });
+    }
+</script>
+{% endblock %}

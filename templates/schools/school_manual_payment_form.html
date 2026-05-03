@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Record Manual Payment" page_subtitle=school.name %}
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-4xl">
+    <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% csrf_token %}
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Amount</label>
+            {{ form.amount }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Payment Method</label>
+            {{ form.payment_method }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Payment Status</label>
+            {{ form.payment_status }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Reference</label>
+            {{ form.reference }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Paid At</label>
+            {{ form.paid_at }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Subscription Start Date</label>
+            {{ form.subscription_start_date }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Subscription End Date</label>
+            {{ form.subscription_end_date }}
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium mb-2">Note</label>
+            {{ form.note }}
+        </div>
+
+        <div class="md:col-span-2">
+            <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                Save Payment Record
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ sheet.student.full_name }}'s Result - {{ school.name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @page {
+            size: A4;
+            margin: 8mm;
+        }
+
+        body {
+            font-size: 11px;
+        }
+
+        .small-text {
+            font-size: 10px;
+            line-height: 1.15;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white !important;
+            }
+
+            .print-shell {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+        }
+
+        table th, table td {
+            padding: 4px 6px !important;
+            vertical-align: top;
+        }
+
+        .watermark-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .watermark-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url('{% if school.logo %}{{ school.logo.url }}{% endif %}');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 170px;
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .watermark-content {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 py-4">
+    <div class="max-w-6xl mx-auto px-3">
+        <div class="no-print flex justify-end mb-3">
+            <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl font-semibold">
+                Print Result
+            </button>
+        </div>
+
+        <div class="print-shell bg-white rounded-2xl shadow-sm border border-slate-200 watermark-container">
+            <div class="watermark-content p-4 space-y-4">
+
+                <div class="text-center border-b border-slate-300 pb-2">
+                    <div class="flex items-center justify-center gap-3 mb-2">
+                        {% if school.logo %}
+                            <img src="{{ school.logo.url }}" alt="{{ school.name }}" class="w-14 h-14 object-cover rounded-lg border border-slate-200">
+                        {% endif %}
+                        <div>
+                            <h1 class="text-xl font-bold uppercase">{{ school.name }}</h1>
+                            <p class="small-text">{{ school.address|default:"" }}</p>
+                            <p class="small-text">
+                                {% if school.phone %}{{ school.phone }}{% endif %}
+                                {% if school.phone and school.email %} | {% endif %}
+                                {% if school.email %}{{ school.email }}{% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <h2 class="text-sm font-semibold uppercase">Academic Result</h2>
+                    <p class="small-text mt-1">
+                        Verification Code: <span class="font-semibold">{{ sheet.verification_code|default:"-" }}</span>
+                    </p>
+                </div>
+
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-start gap-3">
+                        <div class="grid grid-cols-2 gap-x-5 gap-y-1 small-text">
+                            <p><span class="font-semibold">Student Name:</span> {{ sheet.student.full_name }}</p>
+                            <p><span class="font-semibold">Admission No:</span> {{ sheet.student.admission_number }}</p>
+
+                            <p><span class="font-semibold">Class:</span> {{ sheet.school_class.name }}</p>
+                            <p><span class="font-semibold">Session:</span> {{ sheet.session.name }}</p>
+
+                            <p><span class="font-semibold">Term:</span> {{ sheet.term.get_name_display }}</p>
+                            <p><span class="font-semibold">Attendance:</span> {{ sheet.attendance_present }}/{{ sheet.attendance_total }}</p>
+
+                            <p><span class="font-semibold">Next Resumption:</span> {{ sheet.next_resumption_date|default:"-" }}</p>
+                            <p><span class="font-semibold">Position:</span>
+                                {% if sheet.class_position and sheet.class_size %}
+                                    {{ sheet.class_position }}/{{ sheet.class_size }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% if sheet.student.passport %}
+                            <img src="{{ sheet.student.passport.url }}" alt="{{ sheet.student.full_name }}" class="w-20 h-24 object-cover rounded-xl border border-slate-300">
+                        {% else %}
+                            <div class="w-20 h-24 bg-slate-200 rounded-xl border border-slate-300"></div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-6 gap-2 small-text">
+                    <div class="border border-slate-300 rounded-lg p-2"><b>Total:</b><br>{{ sheet.total_obtained }}</div>
+                    <div class="border border-slate-300 rounded-lg p-2"><b>Possible:</b><br>{{ sheet.total_possible }}</div>
+                    <div class="border border-slate-300 rounded-lg p-2"><b>Average:</b><br>{{ sheet.average_score }}</div>
+                    <div class="border border-slate-300 rounded-lg p-2"><b>%:</b><br>{{ sheet.percentage }}</div>
+                    <div class="border border-slate-300 rounded-lg p-2"><b>Grade:</b><br>{{ sheet.average_grade|default:"-" }}</div>
+                    <div class="border border-slate-300 rounded-lg p-2"><b>Class Avg:</b><br>{{ class_average_total }}</div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold mb-2">Subject Performance</h3>
+                    <table class="w-full border border-slate-300 small-text">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="border border-slate-300 text-left">Subject</th>
+                                <th class="border border-slate-300 text-left">CA</th>
+                                <th class="border border-slate-300 text-left">Exam</th>
+                                <th class="border border-slate-300 text-left">Total</th>
+                                <th class="border border-slate-300 text-left">Highest</th>
+                                <th class="border border-slate-300 text-left">Average</th>
+                                <th class="border border-slate-300 text-left">Grade</th>
+                                <th class="border border-slate-300 text-left">Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in sheet.subject_results.all %}
+                            <tr>
+                                <td class="border border-slate-300">{{ item.subject.name }}</td>
+                                <td class="border border-slate-300">{{ item.ca_score }}</td>
+                                <td class="border border-slate-300">{{ item.exam_score }}</td>
+                                <td class="border border-slate-300">{{ item.total_score }}</td>
+                                <td class="border border-slate-300">{{ item.class_highest }}</td>
+                                <td class="border border-slate-300">{{ item.class_average }}</td>
+                                <td class="border border-slate-300">{{ item.grade|default:"-" }}</td>
+                                <td class="border border-slate-300">{{ item.remark|default:"-" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="border border-slate-300 text-center text-slate-500 py-3">
+                                    No subject results available.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="border border-slate-300 rounded-lg p-3">
+                        <h3 class="text-sm font-bold mb-2">Behavior / Skills</h3>
+                        <table class="w-full small-text">
+                            <tbody>
+                                {% for item in sheet.behavior_ratings.all %}
+                                <tr>
+                                    <td class="py-1">{{ item.get_trait_name_display }}</td>
+                                    <td class="py-1 font-semibold">{{ item.score }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2" class="py-1 text-slate-500">No behavior ratings available.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="border border-slate-300 rounded-lg p-3">
+                        <h3 class="text-sm font-bold mb-2">Grading Legend</h3>
+                        <table class="w-full small-text">
+                            <thead>
+                                <tr>
+                                    <th class="text-left py-1">Grade</th>
+                                    <th class="text-left py-1">Range</th>
+                                    <th class="text-left py-1">Remark</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in sheet.grading_scheme.boundaries.all %}
+                                <tr>
+                                    <td class="py-1">{{ item.grade }}</td>
+                                    <td class="py-1">{{ item.min_score }} - {{ item.max_score }}</td>
+                                    <td class="py-1">{{ item.remark|default:"-" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="py-1 text-slate-500">No grading legend available.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 small-text">
+                    <div class="border border-slate-300 rounded-lg p-3">
+                        <b>Teacher's Comment:</b><br>
+                        {{ sheet.teacher_comment|default:"No comment yet." }}
+                    </div>
+                    <div class="border border-slate-300 rounded-lg p-3">
+                        <b>Head Teacher's Comment:</b><br>
+                        {{ sheet.headteacher_comment|default:"No comment yet." }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 small-text">
+                    <div class="border border-slate-300 rounded-lg p-3">
+                        <b>Verification Code:</b><br>
+                        {{ sheet.verification_code|default:"-" }}
+                    </div>
+                    <div class="border border-slate-300 rounded-lg p-3">
+                        <b>Verification Link:</b><br>
+                        {{ verification_url }}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

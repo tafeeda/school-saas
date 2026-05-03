@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Check Result | EduPortal by Mutafs Global Technologies{% endblock %}
+
+{% block content %}
+<style>
+    .result-check-shell {
+        position: relative;
+        min-height: calc(100vh - 3rem);
+        overflow: hidden;
+        border-radius: 24px;
+    }
+
+    .result-check-bg {
+        position: absolute;
+        inset: 0;
+    }
+
+    .result-check-slide {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        animation: resultFadeSlides 24s infinite;
+        transform: scale(1.05);
+    }
+
+    .result-check-slide:nth-child(1) {
+        background-image: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1600&q=80');
+        animation-delay: 0s;
+    }
+
+    .result-check-slide:nth-child(2) {
+        background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=1600&q=80');
+        animation-delay: 8s;
+    }
+
+    .result-check-slide:nth-child(3) {
+        background-image: url('https://images.unsplash.com/photo-1575783970733-1aaedde1db74?auto=format&fit=crop&w=1600&q=80');
+        animation-delay: 16s;
+    }
+
+    @keyframes resultFadeSlides {
+        0%   { opacity: 0; transform: scale(1.05); }
+        8%   { opacity: 1; transform: scale(1.08); }
+        30%  { opacity: 1; transform: scale(1.1); }
+        38%  { opacity: 0; transform: scale(1.12); }
+        100% { opacity: 0; }
+    }
+
+    .result-check-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            135deg,
+            rgba(15, 23, 42, 0.82),
+            rgba(15, 23, 42, 0.62)
+        );
+    }
+
+    .result-check-content {
+        position: relative;
+        z-index: 2;
+        min-height: calc(100vh - 3rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    .result-check-card {
+        width: 100%;
+        max-width: 720px;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(8px);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22);
+        border: 1px solid rgba(255,255,255,0.3);
+        overflow: hidden;
+    }
+</style>
+
+<div class="result-check-shell">
+    <div class="result-check-bg">
+        <div class="result-check-slide"></div>
+        <div class="result-check-slide"></div>
+        <div class="result-check-slide"></div>
+    </div>
+
+    <div class="result-check-overlay"></div>
+
+    <div class="result-check-content">
+        <div class="w-full max-w-2xl">
+            <div class="result-check-card">
+                <div class="bg-slate-900 text-white px-8 py-8 text-center">
+                    <h1 class="text-3xl font-bold">Online Result Checker</h1>
+                    <p class="text-slate-300 mt-2">
+                        Check student results securely using surname and passkey
+                    </p>
+                </div>
+
+                <div class="p-8">
+                    {% if result_error %}
+                        <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+                            {{ result_error }}
+                        </div>
+                    {% endif %}
+
+                    {% if school_name %}
+                        <div class="mb-6 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-blue-700">
+                            School: {{ school_name }}
+                        </div>
+                    {% endif %}
+
+                    <form method="post" class="space-y-6">
+                        {% csrf_token %}
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Student Surname</label>
+                            <input
+                                type="text"
+                                name="surname"
+                                class="w-full rounded-2xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Enter student's surname"
+                                required
+                            >
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Passkey</label>
+                            <input
+                                type="text"
+                                name="token"
+                                class="w-full rounded-2xl border border-slate-300 px-4 py-3 uppercase focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Enter passkey"
+                                required
+                            >
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-2xl py-3 font-semibold transition"
+                        >
+                            Check Result
+                        </button>
+                    </form>
+
+                    <div class="mt-8 text-sm text-slate-500 text-center">
+                        Please ensure the surname matches the one used in the school record.
+                    </div>
+
+                    <div class="mt-4 text-xs text-center text-slate-400">
+                        Powered by EduPortal by Mutafs Global Technologies
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

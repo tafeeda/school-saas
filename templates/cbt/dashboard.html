@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="CBT Dashboard" page_subtitle="Manage computer based tests for your school" %}
+<div class="space-y-6">
+    <div class="flex justify-end gap-3">
+        <a href="{% url 'cbt_exam_create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+            Create CBT Exam
+        </a>
+        <a href="{% url 'cbt_exam_list' %}" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl">
+            View All Exams
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <p class="text-sm text-slate-500">Recent Exams</p>
+            <h3 class="text-3xl font-bold mt-2">{{ exams|length }}</h3>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <h4 class="text-xl font-semibold mb-4">Recent CBT Exams</h4>
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Title</th>
+                    <th class="py-3">Class</th>
+                    <th class="py-3">Subject</th>
+                    <th class="py-3">Duration</th>
+                    <th class="py-3">Questions</th>
+                    <th class="py-3">Status</th>
+                    <th class="py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exams %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3 font-medium">{{ exam.title }}</td>
+                    <td class="py-3">{{ exam.school_class.name }}</td>
+                    <td class="py-3">{{ exam.subject.name }}</td>
+                    <td class="py-3">{{ exam.duration_minutes }} mins</td>
+                    <td class="py-3">{{ exam.total_questions }}</td>
+                    <td class="py-3">
+                        {% if exam.is_active %}
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">Active</span>
+                        {% else %}
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3">
+                        <div class="flex gap-3">
+                            <a href="{% url 'cbt_question_list' exam.id %}" class="text-blue-600 hover:underline">Questions</a>
+                            <a href="{% url 'cbt_exam_attempts' exam.id %}" class="text-purple-600 hover:underline">Attempts</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="py-4 text-slate-500">No CBT exams created yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ page_title|default:"EduPortal SaaS" }}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['\\(', '\\)']],
+            displayMath: [['\\[', '\\]']]
+        },
+        chtml: {
+            scale: 1
+        }
+    };
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+
+<body class="bg-slate-100 text-slate-800 min-h-screen">
+
+    {% if request.user.is_authenticated %}
+        <!-- Mobile overlay -->
+        <div id="sidebarOverlay"
+             onclick="closeSidebar()"
+             class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden">
+        </div>
+    {% endif %}
+
+    <div class="flex min-h-screen">
+
+        {% if request.user.is_authenticated %}
+            <!-- Sidebar wrapper -->
+            <div id="mobileSidebar"
+                 class="fixed lg:sticky top-0 left-0 z-50 h-screen flex-shrink-0 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+                {% include "partials/sidebar.html" %}
+            </div>
+        {% endif %}
+
+        <div class="flex-1 min-w-0">
+
+        {% if request.user.is_authenticated %}
+            <div class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+                <button onclick="openSidebar()" class="bg-slate-900 text-white px-4 py-2 rounded-xl">
+                    ☰ Menu
+                </button>
+
+                <div class="text-right">
+                    <p class="font-semibold text-sm">{{ request.user.username }}</p>
+                    <p class="text-xs text-slate-500">{{ request.user.role }}</p>
+                </div>
+            </div>
+
+            {% include "partials/topbar.html" %}
+        {% endif %}
+
+        <main class="p-4 md:p-6">
+            {% include "partials/messages.html" %}
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="mt-10 border-t border-slate-200 bg-white">
+            <div class="max-w-7xl mx-auto px-4 py-4 text-sm text-slate-500 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                <p>&copy; {% now "Y" %} EduPortal by Mutafs Global Technologies. All rights reserved.</p>
+                <p>Built for modern school management.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        function openSidebar() {
+            document.getElementById("mobileSidebar").classList.remove("-translate-x-full");
+            document.getElementById("sidebarOverlay").classList.remove("hidden");
+        }
+
+        function closeSidebar() {
+            document.getElementById("mobileSidebar").classList.add("-translate-x-full");
+            document.getElementById("sidebarOverlay").classList.add("hidden");
+        }
+    </script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+    });
+    </script>
+
+</body>
+</html>

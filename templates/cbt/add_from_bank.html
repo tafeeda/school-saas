@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Add Questions From Bank" page_subtitle=exam.title %}
+
+<div class="space-y-6">
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Exam</p>
+                <p class="font-semibold">{{ exam.title }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Class</p>
+                <p class="font-semibold">{{ exam.school_class.name }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Subject</p>
+                <p class="font-semibold">{{ exam.subject.name }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Available Bank Questions</p>
+                <p class="font-semibold">{{ questions|length }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h4 class="text-xl font-semibold mb-4">Random Exam Generator</h4>
+
+        <form method="post" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="random_generate">
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Difficulty</label>
+                <select name="difficulty" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    <option value="">Any Difficulty</option>
+                    <option value="EASY">Easy</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HARD">Hard</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Number of Questions</label>
+                <input type="number"
+                       name="number_of_questions"
+                       min="1"
+                       class="w-full rounded-xl border border-slate-300 px-4 py-3"
+                       placeholder="e.g. 20">
+            </div>
+
+            <div>
+                <button type="submit"
+                        class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-xl">
+                    Generate Random
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <form method="post" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_selected">
+
+        <div class="flex justify-between items-center mb-4">
+            <h4 class="text-xl font-semibold">Select Questions</h4>
+
+            <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+                Add Selected to Exam
+            </button>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b border-slate-200">
+                        <th class="py-3">Select</th>
+                        <th class="py-3">Question</th>
+                        <th class="py-3">Difficulty</th>
+                        <th class="py-3">Correct</th>
+                        <th class="py-3">Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for question in questions %}
+                    <tr class="border-b border-slate-100">
+                        <td class="py-3">
+                            {% if question.id in already_added_ids %}
+                                <input type="checkbox" disabled class="h-5 w-5">
+                            {% else %}
+                                <input type="checkbox"
+                                       name="question_ids"
+                                       value="{{ question.id }}"
+                                       class="h-5 w-5">
+                            {% endif %}
+                        </td>
+
+                        <td class="py-3 max-w-xl">
+                            <p class="font-medium math-content">{{ question.question_text|safe }}</p>
+
+                            {% if question.question_image %}
+                                <img src="{{ question.question_image.url }}"
+                                     class="mt-2 w-24 h-24 object-cover rounded-lg border">
+                            {% endif %}
+
+                            <div class="text-sm text-slate-500 mt-2">
+                                A. <span class="math-content">{{ question.option_a|safe }}</span> |
+                                B. <span class="math-content">{{ question.option_b|safe }}</span> |
+                                C. <span class="math-content">{{ question.option_c|safe }}</span> |
+                                D. <span class="math-content">{{ question.option_d|safe }}</span>
+                            </div>
+                        </td>
+
+                        <td class="py-3">{{ question.get_difficulty_display }}</td>
+                        <td class="py-3 font-semibold">{{ question.correct_option }}</td>
+                        <td class="py-3">
+                            {% if question.id in already_added_ids %}
+                                <span class="bg-slate-200 text-slate-700 px-3 py-1 rounded-full text-xs">
+                                    Already Added
+                                </span>
+                            {% else %}
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
+                                    Available
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-6 text-slate-500">
+                            No matching question bank questions found for this exam class and subject.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

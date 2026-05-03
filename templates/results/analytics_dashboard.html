@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <h2 class="text-2xl font-bold">Result Analytics Dashboard</h2>
+
+    <!-- Filter Form -->
+    <form method="get" class="bg-white p-6 rounded-2xl border shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+            <label class="block text-sm font-medium mb-2">Session</label>
+            <select name="session" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                <option value="">All Sessions</option>
+                {% for session in sessions %}
+                    <option value="{{ session.id }}" {% if selected_session == session.id|stringformat:"s" %}selected{% endif %}>
+                        {{ session.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Term</label>
+            <select name="term" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                <option value="">All Terms</option>
+                {% for term in terms %}
+                    <option value="{{ term.id }}" {% if selected_term == term.id|stringformat:"s" %}selected{% endif %}>
+                        {{ term.session.name }} - {{ term.get_name_display }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Class</label>
+            <select name="class" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                <option value="">All Classes</option>
+                {% for class in classes %}
+                    <option value="{{ class.id }}" {% if selected_class == class.id|stringformat:"s" %}selected{% endif %}>
+                        {{ class.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="flex items-end gap-2">
+            <button type="submit" class="bg-slate-900 text-white px-5 py-3 rounded-xl">
+                Apply
+            </button>
+
+            <a href="{% url 'result_analytics_dashboard' %}" class="bg-slate-100 px-5 py-3 rounded-xl">
+                Reset
+            </a>
+
+            <a href="{% url 'analytics_export_pdf' %}?{% if selected_session %}session={{ selected_session }}&{% endif %}{% if selected_term %}term={{ selected_term }}&{% endif %}{% if selected_class %}class={{ selected_class }}{% endif %}"
+            class="bg-green-600 text-white px-4 py-2 rounded-xl">
+                Download PDF
+            </a>
+        </div>
+    </form>
+
+    <!-- Top Students -->
+    <div class="bg-white p-6 rounded-2xl border shadow-sm">
+        <h3 class="text-xl font-semibold mb-4">Top Performing Students</h3>
+
+        <div class="space-y-2">
+            {% for item in top_students %}
+                <div class="flex justify-between border-b py-2">
+                    <span>{{ item.student.full_name }}</span>
+                    <span class="font-bold">{{ item.average_score }}</span>
+                </div>
+            {% empty %}
+                <p>No data available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Class Average -->
+    <div class="bg-white p-6 rounded-2xl border shadow-sm">
+        <h3 class="text-xl font-semibold mb-4">Class Performance</h3>
+        <div style="height: 300px;">
+            <canvas id="classChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Grade Distribution -->
+    <div class="bg-white p-6 rounded-2xl border shadow-sm">
+        <h3 class="text-xl font-semibold mb-4">Grade Distribution</h3>
+        <div style="height: 300px;">
+            <canvas id="gradeChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Subject Performance -->
+    <div class="bg-white p-6 rounded-2xl border shadow-sm">
+        <h3 class="text-xl font-semibold mb-4">Subject Performance</h3>
+        <div style="height: 300px;">
+            <canvas id="subjectChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Performance Trend by Term -->
+    <div class="bg-white p-6 rounded-2xl border shadow-sm">
+        <h3 class="text-xl font-semibold mb-4">Performance Trend by Term</h3>
+        <div style="height: 300px;">
+            <canvas id="trendChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const classLabels = JSON.parse('{{ class_labels|safe|escapejs }}');
+    const classScores = JSON.parse('{{ class_avg_scores|safe|escapejs }}');
+
+    const gradeLabels = JSON.parse('{{ grade_labels|safe|escapejs }}');
+    const gradeCounts = JSON.parse('{{ grade_counts|safe|escapejs }}');
+
+    const subjectLabels = JSON.parse('{{ subject_labels|escapejs }}');
+    const subjectScores = JSON.parse('{{ subject_avg_scores|escapejs }}');
+
+    const trendLabels = JSON.parse('{{ trend_labels|escapejs }}');
+    const trendScores = JSON.parse('{{ trend_scores|escapejs }}');
+
+    new Chart(document.getElementById('classChart'), {
+        type: 'bar',
+        data: {
+            labels: classLabels,
+            datasets: [{
+                label: 'Average Score',
+                data: classScores
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    new Chart(document.getElementById('gradeChart'), {
+        type: 'pie',
+        data: {
+            labels: gradeLabels,
+            datasets: [{
+                data: gradeCounts
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    new Chart(document.getElementById('subjectChart'), {
+        type: 'bar',
+        data: {
+            labels: subjectLabels,
+            datasets: [{
+                label: 'Average Subject Score',
+                data: subjectScores
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, max: 100 }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: trendLabels,
+            datasets: [{
+                label: 'Average Performance',
+                data: trendScores,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, max: 100 }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

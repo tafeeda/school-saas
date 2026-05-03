@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h3 class="text-2xl font-bold">Grade Boundaries</h3>
+            <p class="text-slate-500">Define score ranges and remarks.</p>
+        </div>
+        <a href="{% url 'grade_boundary_create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+            Create Grade Boundary
+        </a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Scheme</th>
+                    <th class="py-3">Grade</th>
+                    <th class="py-3">Min Score</th>
+                    <th class="py-3">Max Score</th>
+                    <th class="py-3">Remark</th>
+                    <th class="py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in boundaries %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3">{{ item.grading_scheme.name }}</td>
+                    <td class="py-3 font-medium">{{ item.grade }}</td>
+                    <td class="py-3">{{ item.min_score }}</td>
+                    <td class="py-3">{{ item.max_score }}</td>
+                    <td class="py-3">{{ item.remark|default:"-" }}</td>
+                    <td class="py-3 flex gap-3">
+                        <a href="{% url 'grade_boundary_update' item.pk %}" class="text-blue-600 hover:underline">Edit</a>
+                        <a href="{% url 'grade_boundary_delete' item.pk %}" class="text-red-600 hover:underline">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-4 text-slate-500">No grade boundaries created yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

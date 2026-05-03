@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-5xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Create Teacher</h3>
+        <p class="text-slate-500 mb-6">Create a teacher account and profile for this school.</p>
+
+        {% if form.errors %}
+            <div class="mb-4 p-4 bg-red-100 border border-red-300 text-red-700 rounded-xl">
+                <ul class="list-disc pl-5 text-sm">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Username</label>
+                {{ form.username }}
+                {% for error in form.username.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">First Name</label>
+                {{ form.first_name }}
+                {% for error in form.first_name.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Last Name</label>
+                {{ form.last_name }}
+                {% for error in form.last_name.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Email</label>
+                {{ form.email }}
+                {% for error in form.email.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Phone</label>
+                {{ form.phone }}
+                {% for error in form.phone.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Gender</label>
+                {{ form.gender }}
+                {% for error in form.gender.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Passport</label>
+                {{ form.passport }}
+                {% for error in form.passport.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Staff ID</label>
+                {{ form.staff_id }}
+                {% for error in form.staff_id.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Designation</label>
+                {{ form.designation }}
+                {% for error in form.designation.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Qualification</label>
+                {{ form.qualification }}
+                {% for error in form.qualification.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Date Joined</label>
+                {{ form.date_joined }}
+                {% for error in form.date_joined.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Password</label>
+                {{ form.password }}
+                {% for error in form.password.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Confirm Password</label>
+                {{ form.confirm_password }}
+                {% for error in form.confirm_password.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                    Save Teacher
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

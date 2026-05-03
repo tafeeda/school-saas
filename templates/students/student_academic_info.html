@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="My Academic Info" page_subtitle=student.full_name %}
+
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+    <div class="flex gap-6 mb-6">
+        {% if student.passport %}
+            <img src="{{ student.passport.url }}" class="w-32 h-32 rounded-2xl object-cover border">
+        {% endif %}
+
+        <div>
+            <h3 class="text-2xl font-bold">{{ student.full_name }}</h3>
+            <p class="text-slate-500">Admission No: {{ student.admission_number }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-sm text-slate-500">Gender</p>
+            <p class="font-semibold">{{ student.get_gender_display }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-sm text-slate-500">Date of Birth</p>
+            <p class="font-semibold">{{ student.date_of_birth|default:"-" }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-sm text-slate-500">School</p>
+            <p class="font-semibold">{{ student.school.name }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-sm text-slate-500">Current Class</p>
+            <p class="font-semibold">{{ student.current_class.name|default:"-" }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-sm text-slate-500">Current Session</p>
+            <p class="font-semibold">{{ student.current_session.name|default:"-" }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-sm text-slate-500">Date Admitted</p>
+            <p class="font-semibold">{{ student.date_admitted|default:"-" }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-sm text-slate-500">Guardian Name</p>
+            <p class="font-semibold">{{ student.guardian_name|default:"-" }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-sm text-slate-500">Guardian Phone</p>
+            <p class="font-semibold">{{ student.guardian_phone|default:"-" }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-sm text-slate-500">Guardian Relationship</p>
+            <p class="font-semibold">{{ student.guardian_relationship|default:"-" }}</p>
+        </div>
+    </div>
+
+    <div class="mt-4 bg-slate-50 rounded-xl p-4">
+        <p class="text-sm text-slate-500">Address</p>
+        <p class="font-semibold">{{ student.address|default:"-" }}</p>
+    </div>
+</div>
+{% endblock %}

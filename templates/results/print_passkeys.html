@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Print Passkeys</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 6mm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .card {
+            border: 1px dashed #000;
+            padding: 5px;
+            height: 110px;
+            box-sizing: border-box;
+        }
+
+        .small {
+            font-size: 8px;
+            line-height: 1.2;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 10px;
+            margin-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+<div class="grid">
+    {% for item in cards %}
+    {% with sheet=item.sheet %}
+    <div class="card">
+        <div class="title">{{ sheet.school.name }}</div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                Name: {{ sheet.student.full_name }}<br>
+                Class: {{ sheet.school_class.name }}<br>
+                Term: {{ sheet.term.get_name_display }}
+            </div>
+
+            <!-- QR CODE HERE -->
+            <div>
+                <img src="data:image/png;base64,{{ item.qr }}" style="width:40px;">
+            </div>
+        </div>
+
+        <div class="small" style="margin-top:4px;">
+            URL: {{ request.get_host }}/results/portal/{{ sheet.school.portal_subpath }}/check/<br>
+            Surname: {{ sheet.student.surname }}<br>
+            Passkey: <strong>{{ sheet.access_token.token }}</strong>
+        </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+</div>
+
+<script>
+    window.print();
+</script>
+</body>
+</html>

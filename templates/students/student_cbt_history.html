@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="My CBT History" page_subtitle=student.full_name %}
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+    <h3 class="text-xl font-semibold mb-4">Exam Attempts</h3>
+    {% if attempts %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-slate-100">
+                    <tr>
+                        <th class="px-4 py-2 text-left">Exam</th>
+                        <th class="px-4 py-2 text-left">Subject</th>
+                        <th class="px-4 py-2 text-left">Score</th>
+                        <th class="px-4 py-2 text-left">Percentage</th>
+                        <th class="px-4 py-2 text-left">Status</th>
+                        <th class="px-4 py-2 text-left">Date</th>
+                        <th class="px-4 py-2 text-left">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attempt in attempts %}
+                        <tr class="border-b">
+                            <td class="px-4 py-2">{{ attempt.exam.title }}</td>
+                            <td class="px-4 py-2">{{ attempt.exam.subject.name }}</td>
+                            <td class="px-4 py-2">{{ attempt.score }}/{{ attempt.total }}</td>
+                            <td class="px-4 py-2">
+                                {% if attempt.total %}
+                                    {{ attempt.score|floatformat:0 }}%
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-2">
+                                {% if attempt.was_auto_submitted %}
+                                    <span class="text-red-600">Auto</span>
+                                {% else %}
+                                    <span class="text-green-600">Submitted</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-2">
+                                {{ attempt.submitted_at|date:"M d, Y H:i" }}
+                            </td>
+                            <td class="px-4 py-2">
+                                <a href="{% url 'student_cbt_exam_result' attempt.id %}"
+                                   class="text-blue-600 hover:underline">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-slate-500">No CBT attempts yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

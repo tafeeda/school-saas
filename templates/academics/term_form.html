@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">{{ page_title }}</h3>
+        <p class="text-slate-500 mb-6">Create or update a school term.</p>
+
+        <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Session</label>
+                {{ form.session }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Term</label>
+                {{ form.name }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Start Date</label>
+                {{ form.start_date }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">End Date</label>
+                {{ form.end_date }}
+            </div>
+
+            <div class="flex items-center gap-3 mt-8">
+                {{ form.is_current }}
+                <label class="text-sm font-medium">Set as current term</label>
+            </div>
+
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold">
+                    Save Term
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

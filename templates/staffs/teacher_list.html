@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h3 class="text-2xl font-bold">Teachers</h3>
+            <p class="text-slate-500">Manage teacher accounts for your school.</p>
+        </div>
+        <a href="{% url 'teacher_create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+            Create Teacher
+        </a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Passport</th>
+                    <th class="py-3">Full Name</th>
+                    <th class="py-3">Username</th>
+                    <th class="py-3">Email</th>
+                    <th class="py-3">Phone</th>
+                    <th class="py-3">Classes & Subjects</th>
+                    <th class="py-3">Status</th>
+                    <th class="py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for teacher in teachers %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3">
+                        {% if teacher.passport %}
+                            <img src="{{ teacher.passport.url }}" alt="{{ teacher.username }}" class="w-12 h-12 rounded-full object-cover">
+                        {% else %}
+                            <div class="w-12 h-12 rounded-full bg-slate-200"></div>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 font-medium">{{ teacher.get_full_name }}</td>
+                    <td class="py-3">{{ teacher.username }}</td>
+                    <td class="py-3">{{ teacher.email }}</td>
+                    <td class="py-3">{{ teacher.phone }}</td>
+                    <td class="py-3">
+                        {% if teacher.grouped_allocations %}
+                            <div class="space-y-2">
+                                {% for class_name, subjects in teacher.grouped_allocations.items %}
+                                    <div class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                                        <p class="font-semibold text-slate-800">
+                                            {{ class_name }}
+                                        </p>
+
+                                        <div class="mt-1 flex flex-wrap gap-2">
+                                            {% for item in subjects %}
+                                                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-xs">
+                                                    {{ item.subject }}
+                                                    <span class="text-blue-500">
+                                                        ({{ item.term }} / {{ item.session }})
+                                                    </span>
+                                                </span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <span class="text-slate-400">No allocation yet</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3">
+                        {% if teacher.is_active %}
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">Active</span>
+                        {% else %}
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 flex gap-3">
+                        <a href="{% url 'teacher_update' teacher.pk %}" class="text-blue-600 hover:underline">Edit</a>
+                        <a href="{% url 'teacher_delete' teacher.pk %}" class="text-red-600 hover:underline">Delete</a>
+
+                        <a href="{% url 'teacher_reset_password' teacher.id %}"
+                        class="bg-yellow-500 text-white px-3 py-1 rounded">
+                        Reset Password
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="py-4 text-slate-500">No teachers created yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

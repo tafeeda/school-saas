@@ -1,0 +1,271 @@
+{% with current_url=request.resolver_match.url_name %}
+
+<style>
+    .sidebar-link {
+        display: block;
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        transition: 0.2s ease;
+    }
+
+    .sidebar-link:hover {
+        background: #1e293b;
+    }
+
+    .sidebar-active {
+        background: #2563eb;
+        color: white;
+        font-weight: 700;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+    }
+</style>
+
+<aside class="w-72 bg-slate-950 text-white h-screen overflow-y-auto px-4 py-5">
+
+    <!-- Brand -->
+    <div class="mb-6 px-2">
+        <a href="{% url 'dashboard_redirect' %}" class="block">
+            <h1 class="text-xl font-bold leading-tight hover:text-blue-200 transition">
+                EduPortal
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">
+                by Mutafs Global Technologies
+            </p>
+        </a>
+
+        <div class="mt-4 bg-slate-900 border border-slate-800 rounded-2xl p-3">
+            <p class="text-xs text-slate-400">Active School</p>
+            <p class="text-sm font-semibold text-white mt-1">
+                {% if current_school %}
+                    {{ current_school.name }}
+                {% else %}
+                    Multi-School Manager
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <nav class="space-y-6">
+
+        <!-- Account -->
+        <div>
+            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2">Account</p>
+
+            <div class="space-y-1">
+                <a href="{% url 'my_profile' %}" class="sidebar-link {% if current_url == 'my_profile' %}sidebar-active{% endif %}">
+                    👤 My Profile
+                </a>
+
+                {% if request.user.role != "STUDENT" %}
+                    <a href="{% url 'dashboard_redirect' %}" class="sidebar-link {% if 'dashboard' in current_url %}sidebar-active{% endif %}">
+                        🏠 Dashboard
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Super Admin -->
+        {% if request.user.is_superuser or is_super_admin_user %}
+        <div>
+            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2">Super Admin</p>
+
+            <div class="space-y-1">
+                {% if request.user.is_superuser %}
+                    <a href="{% url 'create_super_admin' %}" class="sidebar-link {% if current_url == 'create_super_admin' %}sidebar-active{% endif %}">
+                        🛡️ Create Super Admin
+                    </a>
+
+                    <a href="{% url 'audit_log_list' %}" class="sidebar-link {% if current_url == 'audit_log_list' %}sidebar-active{% endif %}">
+                        📜 Audit Logs
+                    </a>
+                {% endif %}
+
+                {% if is_super_admin_user %}
+                    <a href="{% url 'school_list' %}" class="sidebar-link {% if current_url == 'school_list' %}sidebar-active{% endif %}">
+                        🏫 Schools
+                    </a>
+
+                    <a href="{% url 'school_create' %}" class="sidebar-link {% if current_url == 'school_create' %}sidebar-active{% endif %}">
+                        ➕ Create School
+                    </a>
+
+                    <a href="{% url 'create_school_admin' %}" class="sidebar-link {% if current_url == 'create_school_admin' %}sidebar-active{% endif %}">
+                        👨‍💼 Create School Admin
+                    </a>
+
+                    <a href="{% url 'school_admin_list' %}" class="sidebar-link {% if current_url == 'school_admin_list' or current_url == 'school_admin_detail' or current_url == 'school_admin_edit' or current_url == 'school_admin_change_password' %}sidebar-active{% endif %}">
+                        👨‍💼 Manage School Admins
+                    </a>
+
+                    <a href="{% url 'super_admin_list' %}" class="sidebar-link {% if current_url == 'super_admin_list' or current_url == 'super_admin_edit' %}sidebar-active{% endif %}">
+                        🛡️ Manage Super Admins
+                    </a>
+
+                    <a href="{% url 'lesson_note_list' %}" class="sidebar-link {% if current_url == 'lesson_note_list' %}sidebar-active{% endif %}">
+                        📚 Lesson Notes
+                    </a>
+
+                    <a href="{% url 'lesson_note_create' %}" class="sidebar-link {% if current_url == 'lesson_note_create' %}sidebar-active{% endif %}">
+                        ⬆️ Upload Lesson Note
+                    </a>
+
+                    <a href="{% url 'super_admin_transfer_question_bank' %}" class="sidebar-link {% if current_url == 'super_admin_transfer_question_bank' %}sidebar-active{% endif %}">
+                        🔁 Transfer CBT Questions
+                    </a>
+
+                    <a href="{% url 'super_admin_cbt_question_manager' %}" class="sidebar-link {% if current_url == 'super_admin_cbt_question_manager' %}sidebar-active{% endif %}">
+                        🧠 CBT Question Manager
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- School Admin -->
+        {% if is_school_admin_user %}
+
+        <div>
+            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2">Academics</p>
+
+            <div class="space-y-1">
+                <a href="{% url 'session_list' %}" class="sidebar-link {% if current_url == 'session_list' %}sidebar-active{% endif %}">📅 Sessions</a>
+                <a href="{% url 'term_list' %}" class="sidebar-link {% if current_url == 'term_list' %}sidebar-active{% endif %}">🗓️ Terms</a>
+                <a href="{% url 'term_create' %}" class="sidebar-link {% if current_url == 'term_create' %}sidebar-active{% endif %}">➕ Create Term</a>
+                <a href="{% url 'class_list' %}" class="sidebar-link {% if current_url == 'class_list' %}sidebar-active{% endif %}">🏷️ Classes</a>
+                <a href="{% url 'subject_list' %}" class="sidebar-link {% if current_url == 'subject_list' %}sidebar-active{% endif %}">📘 Subjects</a>
+                <a href="{% url 'assign_subject' %}" class="sidebar-link {% if current_url == 'assign_subject' %}sidebar-active{% endif %}">🔗 Assign Subjects</a>
+            </div>
+        </div>
+
+        <div>
+            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2">Staff Management</p>
+
+            <div class="space-y-1">
+                <a href="{% url 'teacher_list' %}" class="sidebar-link {% if current_url == 'teacher_list' %}sidebar-active{% endif %}">👨‍🏫 Teachers</a>
+                <a href="{% url 'teacher_create' %}" class="sidebar-link {% if current_url == 'teacher_create' %}sidebar-active{% endif %}">➕ Create Teacher</a>
+                <a href="{% url 'allocation_list' %}" class="sidebar-link {% if current_url == 'allocation_list' %}sidebar-active{% endif %}">📌 Teaching Allocations</a>
+                <a href="{% url 'allocation_matrix' %}" class="sidebar-link {% if current_url == 'allocation_matrix' %}sidebar-active{% endif %}">🧩 Allocation Matrix</a>
+                <a href="{% url 'allocation_create' %}" class="sidebar-link {% if current_url == 'allocation_create' %}sidebar-active{% endif %}">✅ Assign Teacher</a>
+            </div>
+        </div>
+
+        <div>
+            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2">Student Management</p>
+
+            <div class="space-y-1">
+                <a href="{% url 'student_list' %}" class="sidebar-link {% if current_url == 'student_list' %}sidebar-active{% endif %}">🎓 Students</a>
+                <a href="{% url 'student_create' %}" class="sidebar-link {% if current_url == 'student_create' %}sidebar-active{% endif %}">➕ Create Student</a>
+                <a href="{% url 'bulk_student_upload' %}" class="sidebar-link {% if current_url == 'bulk_student_upload' %}sidebar-active{% endif %}">⬆️ Bulk Student Upload</a>
+                <a href="{% url 'student_login_slips' %}" class="sidebar-link {% if current_url == 'student_login_slips' %}sidebar-active{% endif %}">🧾 Student Login Slips</a>
+                <a href="{% url 'bulk_student_move' %}" class="sidebar-link {% if current_url == 'bulk_student_move' %}sidebar-active{% endif %}">🔁 Bulk Student Movement</a>
+            </div>
+        </div>
+
+        <div>
+            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2">Lesson Notes</p>
+
+            <div class="space-y-1">
+                <a href="{% url 'lesson_note_list' %}" class="sidebar-link {% if current_url == 'lesson_note_list' %}sidebar-active{% endif %}">📚 Lesson Notes</a>
+                <a href="{% url 'lesson_note_create' %}" class="sidebar-link {% if current_url == 'lesson_note_create' %}sidebar-active{% endif %}">⬆️ Upload Lesson Note</a>
+            </div>
+        </div>
+
+        <div>
+            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2">Result Setup</p>
+
+            <div class="space-y-1">
+                <a href="{% url 'grading_scheme_list' %}" class="sidebar-link {% if current_url == 'grading_scheme_list' %}sidebar-active{% endif %}">📊 Grading Schemes</a>
+                <a href="{% url 'grade_boundary_list' %}" class="sidebar-link {% if current_url == 'grade_boundary_list' %}sidebar-active{% endif %}">🎯 Grade Boundaries</a>
+                <a href="{% url 'assessment_template_list' %}" class="sidebar-link {% if current_url == 'assessment_template_list' %}sidebar-active{% endif %}">🧪 Assessment Templates</a>
+                <a href="{% url 'assessment_component_list' %}" class="sidebar-link {% if current_url == 'assessment_component_list' %}sidebar-active{% endif %}">🧱 Assessment Components</a>
+            </div>
+        </div>
+
+        <div>
+            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2">Results</p>
+
+            <div class="space-y-1">
+                <a href="{% url 'result_sheet_list' %}" class="sidebar-link {% if current_url == 'result_sheet_list' %}sidebar-active{% endif %}">📄 Result Sheets</a>
+                <a href="{% url 'result_sheet_create' %}" class="sidebar-link {% if current_url == 'result_sheet_create' %}sidebar-active{% endif %}">➕ Create Result Sheet</a>
+                <a href="{% url 'result_analytics_dashboard' %}" class="sidebar-link {% if current_url == 'result_analytics_dashboard' %}sidebar-active{% endif %}">📈 Result Analytics</a>
+                <a href="{% url 'bulk_generate_result_comments' %}" class="sidebar-link {% if current_url == 'bulk_generate_result_comments' %}sidebar-active{% endif %}">🤖 Generate Comments</a>
+                <a href="{% url 'select_passkey_print' %}" class="sidebar-link {% if current_url == 'select_passkey_print' %}sidebar-active{% endif %}">🔐 Print Passkeys</a>
+                <a href="{% url 'bulk_class_result_print_select' %}" class="sidebar-link {% if current_url == 'bulk_class_result_print_select' or current_url == 'bulk_class_result_print' %}sidebar-active{% endif %}">
+                    🖨️ Bulk Print Class Results
+                </a>
+                <a href="{% url 'bulk_result_controls' %}" class="sidebar-link {% if current_url == 'bulk_result_controls' %}sidebar-active{% endif %}">⚙️ Bulk Result Controls</a>
+            </div>
+        </div>
+
+        {% if request.user.school.enable_cbt %}
+        <div>
+            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2">CBT Module</p>
+
+            <div class="space-y-1">
+                <a href="{% url 'cbt_dashboard' %}" class="sidebar-link {% if current_url == 'cbt_dashboard' %}sidebar-active{% endif %}">💻 CBT Dashboard</a>
+                <a href="{% url 'cbt_exam_list' %}" class="sidebar-link {% if current_url == 'cbt_exam_list' %}sidebar-active{% endif %}">📝 CBT Exams</a>
+                <a href="{% url 'cbt_exam_create' %}" class="sidebar-link {% if current_url == 'cbt_exam_create' %}sidebar-active{% endif %}">➕ Create CBT Exam</a>
+                <a href="{% url 'question_bank_list' %}" class="sidebar-link {% if current_url == 'question_bank_list' %}sidebar-active{% endif %}">🏦 Question Bank</a>
+                <a href="{% url 'cbt_analytics_dashboard' %}" class="sidebar-link {% if current_url == 'cbt_analytics_dashboard' %}sidebar-active{% endif %}">📊 CBT Analytics</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div>
+            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2">Billing</p>
+
+            <div class="space-y-1">
+                <a href="{% url 'school_subscription_status' %}" class="sidebar-link {% if current_url == 'school_subscription_status' %}sidebar-active{% endif %}">
+                    💳 Subscription
+                </a>
+            </div>
+        </div>
+
+        {% endif %}
+
+        <!-- Teacher -->
+        {% if request.user.role == "TEACHER" %}
+        <div>
+            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2">Teacher Panel</p>
+
+            <div class="space-y-1">
+                <a href="{% url 'teacher_dashboard' %}" class="sidebar-link {% if current_url == 'teacher_dashboard' %}sidebar-active{% endif %}">🏠 Dashboard</a>
+                <a href="{% url 'teacher_subject_result_list' %}" class="sidebar-link {% if current_url == 'teacher_subject_result_list' %}sidebar-active{% endif %}">🧾 My Result Entries</a>
+                <a href="{% url 'lesson_note_list' %}" class="sidebar-link {% if current_url == 'lesson_note_list' %}sidebar-active{% endif %}">📚 Lesson Notes</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Student -->
+        {% if request.user.role == "STUDENT" %}
+        <div>
+            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2">Student Portal</p>
+
+            <div class="space-y-1">
+                <a href="{% url 'students_student_dashboard' %}" class="sidebar-link {% if current_url == 'students_student_dashboard' %}sidebar-active{% endif %}">🏠 My Dashboard</a>
+                <a href="{% url 'student_academic_info' %}" class="sidebar-link {% if current_url == 'student_academic_info' %}sidebar-active{% endif %}">🎓 My Academic Info</a>
+                <a href="{% url 'student_results' %}" class="sidebar-link {% if current_url == 'student_results' %}sidebar-active{% endif %}">📄 My Results</a>
+                <a href="{% url 'student_analytics' %}" class="sidebar-link {% if current_url == 'student_analytics' %}sidebar-active{% endif %}">📈 My Analytics</a>
+                <a href="{% url 'student_cbt_history' %}" class="sidebar-link {% if current_url == 'student_cbt_history' %}sidebar-active{% endif %}">📊 CBT History</a>
+
+                {% if request.user.student_profile.school.enable_cbt %}
+                    <a href="{% url 'student_cbt_exam_list' %}" class="sidebar-link {% if current_url == 'student_cbt_exam_list' %}sidebar-active{% endif %}">💻 CBT Exams</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Logout -->
+        <div class="border-t border-slate-800 pt-5">
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="block w-full text-left rounded-xl px-4 py-3 bg-red-600 hover:bg-red-700 text-white transition">
+                    🚪 Logout
+                </button>
+            </form>
+        </div>
+
+    </nav>
+</aside>
+
+{% endwith %}

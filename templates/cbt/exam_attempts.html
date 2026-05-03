@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="CBT Attempts" page_subtitle=exam.title %}
+
+<div class="space-y-6">
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Exam</p>
+                <p class="font-semibold">{{ exam.title }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Subject</p>
+                <p class="font-semibold">{{ exam.subject.name }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Class</p>
+                <p class="font-semibold">{{ exam.school_class.name }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Total Questions</p>
+                <p class="font-semibold">{{ exam.total_questions }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <div class="flex items-center justify-between mb-4">
+            <h4 class="text-xl font-semibold">Student Attempts</h4>
+
+            <a href="{% url 'cbt_export_attempts_csv' exam.id %}"
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm">
+                Export CSV
+            </a>
+        </div>
+
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Student</th>
+                    <th class="py-3">Score</th>
+                    <th class="py-3">Submitted</th>
+                    <th class="py-3">Auto Submit</th>
+                    <th class="py-3">Transferred</th>
+                    <th class="py-3">Tab Switches</th>
+                    <th class="py-3">Started At</th>
+                    <th class="py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in attempts %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3 font-medium">{{ attempt.student.full_name }}</td>
+                    <td class="py-3">{{ attempt.score }}/{{ attempt.total }}</td>
+                    <td class="py-3">
+                        {% if attempt.submitted_at %}
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">Submitted</span>
+                        {% else %}
+                            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-sm">In Progress</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3">
+                        {% if attempt.was_auto_submitted %}
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm">Yes</span>
+                        {% else %}
+                            <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">No</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3">
+                        {% if attempt.result_transferred %}
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">Yes</span>
+                        {% else %}
+                            <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">No</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3">{{ attempt.tab_switch_count }}</td>
+                    <td class="py-3">{{ attempt.started_at }}</td>
+                    <td class="py-3">
+                        <a href="{% url 'cbt_attempt_detail' attempt.id %}" class="text-blue-600 hover:underline">
+                            View Details
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="py-4 text-slate-500">No attempts for this exam yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="text-2xl font-bold mb-6">My Performance Analytics</h2>
+
+<div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-2xl p-6 mb-6">
+    <h3 class="text-xl font-semibold mb-3">AI Performance Insights</h3>
+
+    {% if ai_insights %}
+        <ul class="list-disc pl-5 space-y-2">
+            {% for insight in ai_insights %}
+                <li>{{ insight }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No insight available yet. Results must be published first.</p>
+    {% endif %}
+</div>
+
+<div class="space-y-6">
+
+    <div class="bg-white p-6 rounded-2xl border shadow-sm">
+        <h3 class="text-xl font-semibold mb-4">Performance Trend</h3>
+        <div class="h-64 max-w-4xl mx-auto">
+            <canvas id="trendChart"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl border shadow-sm">
+        <h3 class="text-xl font-semibold mb-4">Subject Performance</h3>
+        <div class="h-64 max-w-4xl mx-auto">
+            <canvas id="subjectChart"></canvas>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-2xl border shadow-sm">
+            <h3 class="text-xl font-semibold mb-4">Top Subjects</h3>
+            {% for item in top_subjects %}
+                <p>{{ item.subject__name }} — {{ item.avg_score|floatformat:2 }}</p>
+            {% empty %}
+                <p class="text-slate-500">No data available.</p>
+            {% endfor %}
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border shadow-sm">
+            <h3 class="text-xl font-semibold mb-4">Needs Improvement</h3>
+            {% for item in weak_subjects %}
+                <p>{{ item.subject__name }} — {{ item.avg_score|floatformat:2 }}</p>
+            {% empty %}
+                <p class="text-slate-500">No data available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const trendLabels = JSON.parse('{{ trend_labels|escapejs }}');
+    const trendScores = JSON.parse('{{ trend_scores|escapejs }}');
+
+    const subjectLabels = JSON.parse('{{ subject_labels|escapejs }}');
+    const subjectScores = JSON.parse('{{ subject_scores|escapejs }}');
+
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: trendLabels,
+            datasets: [{
+                label: 'Average Score',
+                data: trendScores,
+                tension: 0.3,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('subjectChart'), {
+        type: 'bar',
+        data: {
+            labels: subjectLabels,
+            datasets: [{
+                label: 'Score',
+                data: subjectScores,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

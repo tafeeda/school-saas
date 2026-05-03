@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Move Student</h3>
+        <p class="text-slate-500 mb-6">
+            Student: {{ student.full_name }} | Current Class: {{ student.current_class.name|default:"-" }}
+        </p>
+
+        <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium mb-2">New Class</label>
+                {{ form.new_class }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Movement Type</label>
+                {{ form.movement_type }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Movement Date</label>
+                {{ form.movement_date }}
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-2">Reason</label>
+                {{ form.reason }}
+            </div>
+
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                    Save Movement
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

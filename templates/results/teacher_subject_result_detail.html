@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl space-y-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Subject Result Detail</h3>
+        <p class="text-slate-500 mb-6">
+            {{ subject_result.result_sheet.student.full_name }} |
+            {{ subject_result.result_sheet.school_class.name }} |
+            {{ subject_result.result_sheet.session.name }} |
+            {{ subject_result.result_sheet.term.get_name_display }}
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Subject</p>
+                <p class="font-semibold">{{ subject_result.subject.name }}</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">CA Score</p>
+                <p class="font-semibold">{{ subject_result.ca_score }}</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Exam Score</p>
+                <p class="font-semibold">{{ subject_result.exam_score }}</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Total Score</p>
+                <p class="font-semibold">{{ subject_result.total_score }}</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Grade</p>
+                <p class="font-semibold">{{ subject_result.grade|default:"-" }}</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-sm text-slate-500">Remark</p>
+                <p class="font-semibold">{{ subject_result.remark|default:"-" }}</p>
+            </div>
+        </div>
+
+        <div class="flex gap-3 mt-6">
+            <a href="{% url 'teacher_subject_result_update' subject_result.pk %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+                Edit
+            </a>
+            <a href="{% url 'teacher_subject_result_delete' subject_result.pk %}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl">
+                Delete
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

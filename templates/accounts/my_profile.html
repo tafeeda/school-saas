@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-8">
+    <div class="bg-white rounded-2xl shadow p-8">
+        <h2 class="text-2xl font-bold text-slate-800 mb-2">
+            My Profile
+        </h2>
+
+        <p class="text-slate-500 mb-6">
+            Update your personal account details.
+        </p>
+
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">
+                    First Name
+                </label>
+                {{ form.first_name }}
+                {{ form.first_name.errors }}
+                <p class="text-xs text-red-500 mt-1">
+                    Name cannot be changed. Contact school admin for corrections.
+                </p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">
+                    Last Name
+                </label>
+                {{ form.last_name }}
+                {{ form.last_name.errors }}
+                <p class="text-xs text-red-500 mt-1">
+                    Name cannot be changed. Contact school admin for corrections.
+                </p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">
+                    Email
+                </label>
+                {{ form.email }}
+                {{ form.email.errors }}
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl">
+                    Update Profile
+                </button>
+
+                <a href="{% url 'change_my_password' %}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-xl">
+                    Change Password
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

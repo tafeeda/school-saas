@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Create CBT Exam" page_subtitle="Set up a new CBT exam" %}
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-5xl">
+    <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% csrf_token %}
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Exam Title</label>
+            {{ form.title }}
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium mb-2">Instructions</label>
+            {{ form.instructions }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Class</label>
+            {{ form.school_class }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Subject</label>
+            {{ form.subject }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Session</label>
+            {{ form.session }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Term</label>
+            {{ form.term }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Duration (Minutes)</label>
+            {{ form.duration_minutes }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Attempt Rule</label>
+            {{ form.attempt_rule }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Exam Start Date/Time</label>
+            {{ form.start_datetime }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Exam End Date/Time</label>
+            {{ form.end_datetime }}
+        </div>
+
+        <div class="flex items-center gap-3 pt-8">
+            {{ form.show_in_student_portal }}
+            <label class="text-sm font-medium">Show in Student Portal</label>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Transfer CBT Score To Result</label>
+            {{ form.transfer_to_result }}
+            <p class="text-xs text-slate-500 mt-1">
+                Choose whether this CBT score should update CA or Exam score in the result sheet.
+            </p>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Result Score Maximum</label>
+            {{ form.result_score_max }}
+            <p class="text-xs text-slate-500 mt-1">
+                Example: use 30 if CBT should count as CA out of 30, or 70 if it should count as Exam out of 70.
+            </p>
+        </div>
+
+        <div class="flex items-center gap-3 pt-8">
+            {{ form.is_active }}
+            <label class="text-sm font-medium">Exam Active</label>
+        </div>
+
+        <div class="md:col-span-2">
+            <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                Save CBT Exam
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

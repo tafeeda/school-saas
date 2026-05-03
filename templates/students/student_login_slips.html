@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <div class="no-print bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-bold">Student Login Slips</h2>
+                <p class="text-slate-500 mt-1">Print student portal login details.</p>
+            </div>
+
+            <button onclick="window.print()"
+                    class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-xl">
+                Print Slips
+            </button>
+        </div>
+
+        <form method="get" class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-2">Filter by Class</label>
+                <select name="class_id" class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    <option value="">All Classes</option>
+                    {% for class in classes %}
+                        <option value="{{ class.id }}" {% if selected_class_id == class.id|stringformat:"s" %}selected{% endif %}>
+                            {{ class.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex items-end gap-3">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl">
+                    Apply
+                </button>
+
+                <a href="{% url 'student_login_slips' %}" class="bg-slate-100 px-5 py-3 rounded-xl">
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="print-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for student in students %}
+            <div class="slip bg-white border border-slate-300 rounded-2xl p-5 shadow-sm">
+                <div class="text-center border-b pb-3 mb-3">
+                    <h3 class="font-bold text-lg">{{ student.school.name }}</h3>
+                    <p class="text-sm text-slate-500">Student Portal Login Slip</p>
+                </div>
+
+                <div class="space-y-2 text-sm">
+                    <p><strong>Name:</strong> {{ student.full_name }}</p>
+                    <p><strong>Admission No:</strong> {{ student.admission_number }}</p>
+                    <p><strong>Class:</strong> {{ student.current_class.name|default:"-" }}</p>
+                    <p><strong>Username:</strong> {{ student.user.username }}</p>
+                    <p>
+                        <strong>Default Password:</strong>
+                        {% if student.portal_initial_password %}
+                            {{ student.portal_initial_password }}
+                        {% else %}
+                            Password changed / not available
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="mt-4 border-t pt-3 text-xs text-slate-500">
+                    <p>Login through the school portal and change your password after first login.</p>
+                </div>
+            </div>
+        {% empty %}
+            <div class="no-print bg-white rounded-2xl border border-slate-200 p-6 text-slate-500">
+                No students with login accounts found.
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<style>
+    @media print {
+        .no-print,
+        aside,
+        nav,
+        header,
+        .sidebar {
+            display: none !important;
+        }
+
+        body {
+            background: white !important;
+        }
+
+        .print-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 10px !important;
+        }
+
+        .slip {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            box-shadow: none !important;
+            border: 1px solid #000 !important;
+            border-radius: 8px !important;
+            padding: 12px !important;
+            font-size: 11px !important;
+        }
+    }
+</style>
+{% endblock %}

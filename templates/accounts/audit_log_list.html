@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Audit Logs" page_subtitle="Track important system activities" %}
+
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+    <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">Action</label>
+            <select name="action" class="w-full rounded-xl border border-slate-300 px-4 py-2">
+                <option value="">All Actions</option>
+                {% for value, label in actions %}
+                    <option value="{{ value }}" {% if selected_action == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">School</label>
+            <select name="school" class="w-full rounded-xl border border-slate-300 px-4 py-2">
+                <option value="">All Schools</option>
+                {% for school in schools %}
+                    <option value="{{ school.id }}" {% if selected_school == school.id|stringformat:"s" %}selected{% endif %}>
+                        {{ school.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">Search</label>
+            <input type="text"
+                   name="search"
+                   value="{{ search|default:'' }}"
+                   placeholder="Username, IP, description..."
+                   class="w-full rounded-xl border border-slate-300 px-4 py-2">
+        </div>
+
+        <div class="flex items-end gap-2">
+            <button type="submit"
+                    class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl">
+                Filter
+            </button>
+
+            <a href="{% url 'audit_log_list' %}"
+               class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-5 py-2 rounded-xl">
+                Reset
+            </a>
+        </div>
+
+        <div class="mb-4 flex justify-end">
+            <a href="{% url 'audit_log_export_csv' %}?action={{ selected_action|default:'' }}&school={{ selected_school|default:'' }}&search={{ search|default:'' }}"
+            class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl">
+                Export CSV
+            </a>
+        </div>
+    </form>
+</div>
+
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b text-left text-slate-500">
+                    <th class="py-3 px-3">Date</th>
+                    <th class="py-3 px-3">Action</th>
+                    <th class="py-3 px-3">Actor</th>
+                    <th class="py-3 px-3">Affected User</th>
+                    <th class="py-3 px-3">School</th>
+                    <th class="py-3 px-3">IP Address</th>
+                    <th class="py-3 px-3">Description</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for log in logs %}
+                    <tr class="border-b hover:bg-slate-50
+                        {% if log.action == 'FAILED_LOGIN' %}
+                            bg-red-50
+                        {% elif log.action == 'LOGIN' %}
+                            bg-green-50
+                        {% elif log.action == 'PASSWORD_CHANGED' %}
+                            bg-yellow-50
+                        {% endif %}
+                    ">
+                        <td class="py-3 px-3 whitespace-nowrap">
+                            {{ log.created_at|date:"M d, Y H:i" }}
+                        </td>
+
+                        <td class="py-3 px-3">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                {% if log.action == 'FAILED_LOGIN' %}
+                                    bg-red-100 text-red-700
+                                {% elif log.action == 'LOGIN' %}
+                                    bg-green-100 text-green-700
+                                {% elif log.action == 'LOGOUT' %}
+                                    bg-slate-200 text-slate-700
+                                {% elif log.action == 'PASSWORD_CHANGED' %}
+                                    bg-yellow-100 text-yellow-700
+                                {% elif log.action == 'SUPER_ADMIN_CREATED' %}
+                                    bg-purple-100 text-purple-700
+                                {% else %}
+                                    bg-slate-100 text-slate-700
+                                {% endif %}
+                            ">
+                                {{ log.get_action_display }}
+                            </span>
+                        </td>
+
+                        <td class="py-3 px-3">
+                            {{ log.actor|default:"System" }}
+                        </td>
+
+                        <td class="py-3 px-3">
+                            {{ log.affected_user|default:"-" }}
+                        </td>
+
+                        <td class="py-3 px-3">
+                            {% if log.school %}
+                                {{ log.school.name }}
+                            {% else %}
+                                Global
+                            {% endif %}
+                        </td>
+
+                        <td class="py-3 px-3">
+                            {{ log.ip_address|default:"-" }}
+                        </td>
+
+                        <td class="py-3 px-3">
+                            {{ log.description|default:"-" }}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-500">
+                            No audit logs found for this filter.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

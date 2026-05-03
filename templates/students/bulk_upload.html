@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="text-2xl font-bold mb-4">Bulk Student Upload</h2>
+
+<div class="bg-white p-6 rounded-xl shadow border border-slate-200 max-w-xl">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label class="block mb-2 font-medium">Upload CSV / Excel</label>
+        <input type="file" name="file"
+               class="w-full border rounded-lg p-2 mb-4" required>
+
+        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg">
+            Upload Students
+        </button>
+
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold">Bulk Student Upload</h2>
+
+            <a href="{% url 'download_student_template' %}"
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                Download Template
+            </a>
+        </div>
+    </form>
+
+    <div class="mt-6 text-sm text-gray-600">
+        <p><strong>Required Columns:</strong></p>
+        <ul class="list-disc ml-5">
+            <li>admission_number</li>
+            <li>surname</li>
+            <li>first_name</li>
+            <li>other_name</li>
+            <li>gender</li>
+            <li>class</li>
+            <li>username (optional)</li>
+            <li>password (optional)</li>
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

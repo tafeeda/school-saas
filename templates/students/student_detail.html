@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Student Detail" page_subtitle=student.full_name %}
+<div class="space-y-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex flex-col md:flex-row md:items-start gap-6">
+            <div>
+                {% if student.passport %}
+                    <img src="{{ student.passport.url }}" alt="{{ student.full_name }}" class="w-36 h-36 rounded-2xl object-cover border border-slate-200">
+                {% else %}
+                    <div class="w-36 h-36 rounded-2xl bg-slate-200"></div>
+                {% endif %}
+            </div>
+
+            <div class="flex-1">
+                <p class="text-slate-500 mt-1">Admission No: {{ student.admission_number }}</p>
+
+                <div class="flex gap-3 mt-4">
+                    <a href="{% url 'student_move' student.pk %}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl">
+                        Move Student
+                    </a>
+                    <a href="{% url 'student_history' student.pk %}" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl">
+                        View History
+                    </a>
+                {% if student.user %}
+                    <a href="{% url 'student_reset_password' student.id %}"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-xl">
+                        Reset Password
+                    </a>
+                {% else %}
+                    <a href="{% url 'student_create_login_account' student.id %}"
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl">
+                        Create Login Account
+                    </a>
+                {% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Gender</p>
+                        <p class="font-semibold">{{ student.get_gender_display }}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Date of Birth</p>
+                        <p class="font-semibold">{{ student.date_of_birth|default:"-" }}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Current Class</p>
+                        <p class="font-semibold">{{ student.current_class.name|default:"-" }}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Current Session</p>
+                        <p class="font-semibold">{{ student.current_session.name|default:"-" }}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Date Admitted</p>
+                        <p class="font-semibold">{{ student.date_admitted|default:"-" }}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-4">
+                        <p class="text-sm text-slate-500">Status</p>
+                        <p class="font-semibold">
+                            {% if student.is_active %}Active{% else %}Inactive{% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h4 class="text-xl font-semibold mb-4">Student Address</h4>
+            <p class="text-slate-700">{{ student.address|default:"No address provided." }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h4 class="text-xl font-semibold mb-4">Guardian Information</h4>
+            <div class="space-y-3">
+                <p><span class="font-semibold">Name:</span> {{ student.guardian_name|default:"-" }}</p>
+                <p><span class="font-semibold">Phone:</span> {{ student.guardian_phone|default:"-" }}</p>
+                <p><span class="font-semibold">Email:</span> {{ student.guardian_email|default:"-" }}</p>
+                <p><span class="font-semibold">Relationship:</span> {{ student.guardian_relationship|default:"-" }}</p>
+                <p><span class="font-semibold">Address:</span> {{ student.guardian_address|default:"-" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-5xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Bulk Result Controls</h3>
+        <p class="text-slate-500 mb-6">
+            Choose a class, session, and term, then perform a bulk action.
+        </p>
+
+        <form method="post" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Class</label>
+                <select name="class_id" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                    <option value="">Select Class</option>
+                    {% for c in classes %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Session</label>
+                <select name="session_id" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                    <option value="">Select Session</option>
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}">{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Term</label>
+                <select name="term_id" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                    <option value="">Select Term</option>
+                    {% for t in terms %}
+                        <option value="{{ t.id }}">{{ t.get_name_display }} - {{ t.session.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="md:col-span-3">
+                <label class="block text-sm font-medium mb-2">Bulk Action</label>
+                <select name="action" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                    <option value="">Select Action</option>
+                    <option value="publish">Publish All Results</option>
+                    <option value="unpublish">Unpublish All Results</option>
+                    <option value="block">Block All Results</option>
+                    <option value="unblock">Unblock All Results</option>
+                    <option value="regenerate_passkeys">Regenerate All Passkeys</option>
+                    <option value="print_passkeys">Print Passkeys</option>
+                </select>
+            </div>
+
+            <div class="md:col-span-3">
+                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                    Run Bulk Action
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

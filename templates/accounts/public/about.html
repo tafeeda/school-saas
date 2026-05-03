@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}About | EduPortal{% endblock %}
+
+{% block content %}
+<style>
+    .fade-in {
+        animation: fadeIn 0.6s ease forwards;
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hover-lift {
+        transition: all 0.25s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    }
+</style>
+
+<div class="max-w-6xl mx-auto">
+
+    <a href="{% url 'login' %}"
+    class="fade-in inline-flex items-center mb-5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:text-blue-700 transition">
+        ← Back to Login
+    </a>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+        <h1 class="text-3xl font-extrabold text-slate-800 mb-4">
+            About EduPortal
+        </h1>
+
+        <p class="text-slate-600 leading-8">
+            EduPortal by <span class="font-semibold">Mutafs Global Technologies</span> is a modern,
+            cloud-based school management system designed to simplify academic operations,
+            improve transparency, and enhance communication between schools, teachers,
+            students, and parents.
+        </p>
+
+        <p class="text-slate-600 leading-8 mt-4">
+            From result management and student records to lesson notes and analytics,
+            EduPortal provides a complete digital solution for schools of all sizes.
+        </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 mt-8">
+        <div class="fade-in hover-lift bg-white p-6 rounded-2xl border shadow-sm">
+            <h3 class="font-bold text-lg text-blue-700 mb-2">Smart Results</h3>
+            <p class="text-slate-600 text-sm">
+                Automated grading, ranking, and result publication with secure student access.
+            </p>
+        </div>
+
+        <div class="fade-in hover-lift bg-white p-6 rounded-2xl border shadow-sm"
+             style="animation-delay: 0.1s;">
+            <h3 class="font-bold text-lg text-green-700 mb-2">Multi-School SaaS</h3>
+            <p class="text-slate-600 text-sm">
+                Manage multiple schools from a single platform with full control.
+            </p>
+        </div>
+
+        <div class="fade-in hover-lift bg-white p-6 rounded-2xl border shadow-sm"
+             style="animation-delay: 0.2s;">
+            <h3 class="font-bold text-lg text-purple-700 mb-2">Secure Access</h3>
+            <p class="text-slate-600 text-sm">
+                Role-based access for admins, teachers, students, and parents.
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

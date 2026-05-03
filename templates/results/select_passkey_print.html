@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Print Passkeys</h3>
+        <p class="text-slate-500 mb-6">
+            Select class, session and term to print student passkeys.
+        </p>
+
+        <form method="get" action="" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <!-- Class -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Class</label>
+                <select name="class_id" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                    <option value="">Select Class</option>
+                    {% for c in classes %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Session -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Session</label>
+                <select name="session_id" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                    <option value="">Select Session</option>
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}">{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Term -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Term</label>
+                <select name="term_id" class="w-full rounded-xl border border-slate-300 px-4 py-3" required>
+                    <option value="">Select Term</option>
+                    {% for t in terms %}
+                        <option value="{{ t.id }}">{{ t.get_name_display }} - {{ t.session.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="md:col-span-3">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold">
+                    Print Passkeys
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

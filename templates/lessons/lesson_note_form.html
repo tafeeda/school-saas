@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-5xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Upload Lesson Note</h3>
+        <p class="text-slate-500 mb-6">
+            Upload lesson note files in pdf, doc, docx, ppt, pptx, txt, csv, or xlsx format.
+            You can upload a weekly lesson note, a full-term lesson note, or a full-session lesson note.
+        </p>
+
+        <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <div class="md:col-span-2 rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3">
+                <strong>Please fix the errors below:</strong>
+                <ul class="mt-2 list-disc list-inside">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div>
+                <label class="block text-sm font-medium mb-2">School</label>
+                {{ form.school }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Class</label>
+                {{ form.school_class }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Subject</label>
+                {{ form.subject }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Session</label>
+                {{ form.session }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Term</label>
+                {{ form.term }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Scope</label>
+                {{ form.scope }}
+                <p class="text-red-500 text-sm mt-1">{{ form.scope.errors }}</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Week</label>
+                {{ form.week }}
+                <p class="text-red-500 text-sm mt-1">{{ form.week.errors }}</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Title</label>
+                {{ form.title }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Topic</label>
+                {{ form.topic }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Subtopic</label>
+                {{ form.subtopic }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Status</label>
+                {{ form.status }}
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-2">Lesson File</label>
+                {{ form.lesson_file }}
+                <p class="text-red-500 text-sm mt-1">{{ form.lesson_file.errors }}</p>
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-2">Description</label>
+                {{ form.description }}
+            </div>
+
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                    Save Lesson Note
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

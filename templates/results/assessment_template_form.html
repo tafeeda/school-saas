@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-2xl font-bold mb-2">Create Assessment Template</h3>
+        <p class="text-slate-500 mb-6">Example: CA + Exam Total 100.</p>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Template Name</label>
+                {{ form.name }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Total Score</label>
+                {{ form.total_score }}
+            </div>
+
+            <div class="flex items-center gap-3">
+                {{ form.is_default }}
+                <label class="text-sm font-medium">Set as default assessment template</label>
+            </div>
+
+            <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold">
+                Save Assessment Template
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

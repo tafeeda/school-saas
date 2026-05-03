@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "partials/page_header.html" with page_title="Result Sheets" page_subtitle="Manage student result sheets for each term and session" %}
+<div class="space-y-6">
+    <div class="flex justify-end gap-3">
+        <a href="{% url 'bulk_result_sheet_create' %}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl">
+            Bulk Create Result Sheets
+        </a>
+
+        <a href="{% url 'result_sheet_create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+            Create Result Sheet
+        </a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-slate-200">
+                    <th class="py-3">Student</th>
+                    <th class="py-3">Class</th>
+                    <th class="py-3">Session</th>
+                    <th class="py-3">Term</th>
+                    <th class="py-3">Average</th>
+                    <th class="py-3">Position</th>
+                    <th class="py-3">Published</th>
+                    <th class="py-3">Status</th>
+                    <th class="py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sheet in sheets %}
+                <tr class="border-b border-slate-100">
+                    <td class="py-3 font-medium">{{ sheet.student.full_name }}</td>
+                    <td class="py-3">{{ sheet.school_class.name }}</td>
+                    <td class="py-3">{{ sheet.session.name }}</td>
+                    <td class="py-3">{{ sheet.term.get_name_display }}</td>
+                    <td class="py-3">{{ sheet.average_score }}</td>
+                    <td class="py-3">
+                        {% if sheet.class_position and sheet.class_size %}
+                            {{ sheet.class_position }}/{{ sheet.class_size }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="py-3">
+                        {% if sheet.is_published %}
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">Published</span>
+                        {% else %}
+                            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-sm">Draft</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3">
+                        {% if sheet.is_result_blocked %}
+                            <span class="text-red-600 font-semibold">Blocked</span>
+                        {% else %}
+                            <span class="text-green-600">Active</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 flex gap-3">
+                        <a href="{% url 'result_sheet_detail' sheet.pk %}" class="text-blue-600 hover:underline">View</a>
+                        <a href="{% url 'result_sheet_update' sheet.pk %}" class="text-emerald-600 hover:underline">Edit</a>
+                        <a href="{% url 'result_sheet_delete' sheet.pk %}" class="text-red-600 hover:underline">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="py-4 text-slate-500">No result sheets created yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

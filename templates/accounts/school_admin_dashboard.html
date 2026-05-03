@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Welcome Header -->
+    <div class="bg-gradient-to-r from-slate-900 to-slate-700 text-white rounded-2xl shadow-sm p-6">
+        <h3 class="text-2xl font-bold">{{ school.name }}</h3>
+        <p class="text-slate-200 mt-2">School admin workspace is ready.</p>
+
+        {% if last_login_log %}
+            <div class="mt-4 text-sm text-slate-300">
+                Last login: {{ last_login_log.created_at|date:"M d, Y H:i" }}
+                | IP: {{ last_login_log.ip_address|default:"-" }}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Subscription Notice -->
+    {% if expiry_date %}
+        {% if subscription_state == "expired" %}
+            <div class="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4">
+                <h4 class="font-semibold text-lg">Subscription Expired</h4>
+                <p>Your school access expired on {{ expiry_date }}.</p>
+            </div>
+        {% elif subscription_state == "critical" %}
+            <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-2xl p-4">
+                <h4 class="font-semibold text-lg">Subscription Expiring Soon</h4>
+                <p>Your subscription will expire in {{ days_left }} day{{ days_left|pluralize }} on {{ expiry_date }}.</p>
+            </div>
+        {% elif subscription_state == "warning" %}
+            <div class="bg-blue-50 border border-blue-200 text-blue-700 rounded-2xl p-4">
+                <h4 class="font-semibold text-lg">Subscription Reminder</h4>
+                <p>Your subscription will expire in {{ days_left }} day{{ days_left|pluralize }} on {{ expiry_date }}.</p>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Students</p>
+            <h3 class="text-3xl font-bold mt-2">{{ total_students }}</h3>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Teachers</p>
+            <h3 class="text-3xl font-bold mt-2">{{ total_teachers }}</h3>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Classes</p>
+            <h3 class="text-3xl font-bold mt-2">{{ total_classes }}</h3>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <p class="text-sm text-slate-500">Published Results</p>
+            <h3 class="text-3xl font-bold mt-2">{{ total_published_results }}</h3>
+        </div>
+    </div>
+
+    <!-- Quick Action -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="{% url 'result_analytics_dashboard' %}"
+           class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition">
+            <h4 class="text-xl font-semibold">Result Analytics</h4>
+            <p class="text-slate-500 mt-2">View performance insights and reports.</p>
+        </a>
+
+        <a href="{% url 'bulk_class_result_print_select' %}"
+        class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition">
+            <h4 class="text-xl font-semibold">Bulk Print Class Results</h4>
+            <p class="text-slate-500 mt-2">Print all published student results for a selected class, session, and term.</p>
+        </a>
+
+        <a href="{% url 'school_admin_class_list' %}"
+           class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition">
+            <h4 class="text-xl font-semibold">Classes & Students</h4>
+            <p class="text-slate-500 mt-2">View all classes and students in each class.</p>
+        </a>
+    </div>
+
+    <!-- Students Per Class Cards -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h4 class="text-xl font-semibold mb-4">Students Per Class</h4>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {% for item in class_counts %}
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                    <p class="text-sm text-slate-500">{{ item.name }}</p>
+                    <p class="text-2xl font-bold mt-1">{{ item.student_count }}</p>
+                </div>
+            {% empty %}
+                <p class="text-slate-500">No classes found.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- Students Per Class Chart -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h4 class="text-xl font-semibold mb-4">Students Per Class Chart</h4>
+
+            {% if class_student_counts %}
+                <div class="h-72">
+                    <canvas id="studentsPerClassChart"></canvas>
+                </div>
+            {% else %}
+                <div class="flex items-center justify-center h-72 text-slate-500">
+                    No class data available yet.
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Result Status Overview -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h4 class="text-xl font-semibold mb-4">Result Status Overview</h4>
+
+            {% if published_results or blocked_results or unpublished_results %}
+                <div class="h-72">
+                    <canvas id="resultStatusChart"></canvas>
+                </div>
+            {% else %}
+                <div class="flex items-center justify-center h-72 text-slate-500">
+                    No result data available yet.
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const classLabels = JSON.parse('{{ class_labels|safe|escapejs }}');
+    const classStudentCounts = JSON.parse('{{ class_student_counts|safe|escapejs }}');
+
+    const publishedResults = Number('{{ published_results|default:0|escapejs }}');
+    const blockedResults = Number('{{ blocked_results|default:0|escapejs }}');
+    const unpublishedResults = Number('{{ unpublished_results|default:0|escapejs }}');
+
+    new Chart(document.getElementById('studentsPerClassChart'), {
+        type: 'bar',
+        data: {
+            labels: classLabels,
+            datasets: [{
+                label: 'Students',
+                data: classStudentCounts,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('resultStatusChart'), {
+        type: 'pie',
+        data: {
+            labels: ['Published', 'Blocked', 'Unpublished'],
+            datasets: [{
+                data: [publishedResults, blockedResults, unpublishedResults]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+{% endblock %}
