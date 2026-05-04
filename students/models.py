@@ -1,5 +1,5 @@
 from django.db import models
-
+from core.image_utils import compress_uploaded_image
 from core.models import SchoolAwareModel, ActiveStatusMixin
 
 
@@ -61,6 +61,16 @@ class Student(SchoolAwareModel, ActiveStatusMixin):
     def full_name(self):
         names = [self.surname, self.first_name, self.other_name or ""]
         return " ".join([name for name in names if name]).strip()
+
+    def save(self, *args, **kwargs):
+        if self.passport:
+            self.passport = compress_uploaded_image(
+                self.passport,
+                max_size=(350, 350),
+                quality=70,
+            )
+
+        super().save(*args, **kwargs)
 
 
 class StudentClassHistory(SchoolAwareModel, ActiveStatusMixin):

@@ -6,6 +6,7 @@ from django.utils.text import slugify
 from datetime import timedelta
 from django.utils import timezone
 from core.models import TimeStampedModel, ActiveStatusMixin
+from core.image_utils import compress_uploaded_image
 
 
 class School(TimeStampedModel, ActiveStatusMixin):
@@ -55,11 +56,20 @@ class School(TimeStampedModel, ActiveStatusMixin):
     def __str__(self):
         return self.name
 
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
         if not self.trial_end_date:
             self.trial_end_date = timezone.now() + timedelta(days=30)
+
+        if self.logo:
+            self.logo = compress_uploaded_image(
+                self.logo,
+                max_size=(400, 400),
+                quality=70,
+            )
+
         super().save(*args, **kwargs)
 
 
