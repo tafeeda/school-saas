@@ -45,6 +45,8 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "crispy_forms",
     "crispy_tailwind",
+    "cloudinary_storage",
+    "cloudinary",
 ]
 
 LOCAL_APPS = [
@@ -138,8 +140,17 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"] if (BASE_DIR / "static").exists() else []
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
+
+
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -173,8 +184,6 @@ PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY", "")
 PAYSTACK_CURRENCY = os.getenv("PAYSTACK_CURRENCY", "NGN")
 
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
-
 
 CSRF_TRUSTED_ORIGINS = [
     "https://web-production-04359.up.railway.app",
@@ -196,3 +205,11 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
 
     X_FRAME_OPTIONS = "DENY"
+
+
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": config("CLOUD_NAME", default=""),
+    "API_KEY": config("API_KEY", default=""),
+    "API_SECRET": config("API_SECRET", default=""),
+}
