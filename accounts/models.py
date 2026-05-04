@@ -28,6 +28,13 @@ class User(AbstractUser):
     passport = models.ImageField(upload_to="user_passports/", blank=True, null=True)
     must_change_password = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        if self.is_superuser:
+            self.role = "SUPER_ADMIN"
+            self.is_staff = True
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
         full_name = self.get_full_name().strip()
         return full_name if full_name else self.username
