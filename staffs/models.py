@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from core.models import SchoolAwareModel, ActiveStatusMixin
+from core.image_utils import compress_uploaded_image
 
 
 class StaffProfile(SchoolAwareModel, ActiveStatusMixin):
@@ -14,12 +15,22 @@ class StaffProfile(SchoolAwareModel, ActiveStatusMixin):
     designation = models.CharField(max_length=100, blank=True, null=True)
     qualification = models.CharField(max_length=255, blank=True, null=True)
     date_joined = models.DateField(blank=True, null=True)
+    passport = models.ImageField(upload_to="staff_passports/", blank=True, null=True)
 
     class Meta:
         ordering = ["user__first_name", "user__last_name"]
 
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.staff_id}"
+
+    def save(self, *args, **kwargs):
+        if self.passport:
+            self.passport = compress_uploaded_image(
+                self.passport,
+                max_size=(350, 350),
+                quality=70,
+            )
+        super().save(*args, **kwargs)
 
 
 class TeacherSubjectAllocation(SchoolAwareModel, ActiveStatusMixin):
